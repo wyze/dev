@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "outputs": ["build/**", ".wrangler/**"],
+      "dependsOn": ["typegen", "^build"]
+    },
+    "check": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/biome.json"],
+      "dependsOn": ["^check"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "e2e": {
+      "dependsOn": ["build"]
+    },
+    "preview": {
+      "dependsOn": ["^preview"]
+    },
+    "typecheck": {
+      "dependsOn": ["typegen", "^typecheck"]
+    },
+    "typegen": {
+      "outputs": [".react-router/**", "worker-configuration.d.ts"],
+      "dependsOn": ["^typegen"]
+    }
+  }
+}

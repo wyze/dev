@@ -1,0 +1,16 @@
+{
+  "name": "lists-e2e",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "PWTEST_WATCH=1 playwright test",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "@types/node": "catalog:",
+    "@wyze/typescript-config": "workspace:*",
+    "lists": "workspace:*"
+  }
+}

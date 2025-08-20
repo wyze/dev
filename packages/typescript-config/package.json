@@ -1,0 +1,14 @@
+{
+  "name": "@wyze/typescript-config",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./cloudflare": "./src/cloudflare.json",
+    "./node": "./src/node.json",
+    "./react": "./src/react.json"
+  },
+  "scripts": {
+    "check": "biome check --write ."
+  }
+}

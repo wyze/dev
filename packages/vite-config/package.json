@@ -1,0 +1,25 @@
+{
+  "name": "@wyze/vite-config",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "biome check --write .",
+    "typecheck": "tsc -b"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.11.6",
+    "@react-router/dev": "catalog:",
+    "@tailwindcss/vite": "^4.1.12",
+    "@types/node": "catalog:",
+    "@wyze/typescript-config": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-icons-spritesheet": "^3.0.1",
+    "vite-plugin-devtools-json": "^1.0.0",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

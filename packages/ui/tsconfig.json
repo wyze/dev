@@ -1,0 +1,10 @@
+{
+  "extends": "@wyze/typescript-config/react",
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@wyze/ui/*": ["./src/*"]
+    }
+  }
+}

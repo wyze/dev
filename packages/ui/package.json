@@ -1,0 +1,33 @@
+{
+  "name": "@wyze/ui",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./globals.css": "./src/globals.css",
+    "./helpers/*": "./src/helpers/*.ts",
+    "./*": "./src/components/ui/*.tsx"
+  },
+  "scripts": {
+    "check": "biome check --write .",
+    "shadcn": "pnpm dlx shadcn@0.0.0-beta.6e471d17",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@base-ui-components/react": "^1.0.0-beta.2",
+    "class-variance-authority": "~0.7.1",
+    "clsx": "^2.1.1",
+    "sonner": "catalog:",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@wyze/typescript-config": "workspace:*",
+    "tailwindcss": "^4.1.12",
+    "tw-animate-css": "^1.3.7",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@types/react": "catalog:",
+    "react": "catalog:"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "wyze.dev",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "check": "turbo check",
+    "dev": "turbo dev",
+    "e2e": "turbo e2e",
+    "postui": "pnpm check",
+    "preview": "turbo preview",
+    "typecheck": "turbo typecheck",
+    "ui": "pnpm --filter=ui shadcn"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "turbo": "^2.5.6"
+  },
+  "engines": {
+    "node": "^22.0.0"
+  },
+  "pkgx": {
+    "dependencies": {
+      "gh": "latest",
+      "nodejs.org": "^22.0.0",
+      "pnpm.io": "10.14.0"
+    }
+  },
+  "packageManager": "pnpm@10.14.0",
+  "trustedDependencies": [
+    "@biomejs/biome"
+  ]
+}

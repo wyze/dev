@@ -1,0 +1,154 @@
+import { uuid } from '@cfworker/uuid'
+import { Button } from '@wyze/ui/button'
+import { Card, CardContent } from '@wyze/ui/card'
+import { Input } from '@wyze/ui/input'
+import mnemonicWords from 'mnemonic-words'
+import * as React from 'react'
+import { Form, redirect } from 'react-router'
+import * as v from 'valibot'
+
+import { createToast } from '~/.server/toast'
+import { capitalize } from '~/helpers/capitalize'
+import { randomItem } from '~/helpers/random-item'
+import { Icon } from '~/modules/icon'
+import { getListsCookie } from '~/modules/list/helpers/get-lists-cookie'
+import { ListsSchema } from '~/modules/list/helpers/schemas'
+
+import type { Route } from './+types/route'
+
+export async function action(args: Route.ActionArgs) {
+  const cookie = getListsCookie(args, 'nullable')
+  const formData = await args.request.formData()
+
+  const label = v.safeParse(
+    v.pipe(
+      v.string('Must be a string.'),
+      v.nonEmpty('Must have a minimum length of 1.'),
+    ),
+    formData.get('entry'),
+  )
+
+  if (!label.success) {
+    return redirect(
+      '/',
+      await createToast(args, {
+        description: label.issues.map((issue) => issue.message).join(' '),
+        title: 'Entry parse error',
+        type: 'error',
+      }),
+    )
+  }
+
+  const name = capitalize(
+    new Array(3)
+      .fill(0)
+      .map(() => randomItem(mnemonicWords))
+      .join(' '),
+  )
+
+  try {
+    const id = uuid()
+    const lists = v.parse(ListsSchema, [
+      { entries: [{ id: uuid(), label: label.output }], id, name },
+    ])
+
+    return redirect(`lists/${id}`, await cookie.save(lists))
+  } catch (error) {
+    switch (true) {
+      case error instanceof v.ValiError:
+        return redirect(
+          '/',
+          await createToast(args, {
+            description: error.issues.map((issue) => issue.message).join(' '),
+            title: 'List parse error',
+            type: 'error',
+          }),
+        )
+      case error instanceof Error:
+        return redirect(
+          '/',
+          await createToast(args, {
+            description: error.message,
+            title: 'Generic error',
+            type: 'error',
+          }),
+        )
+      default:
+        return redirect(
+          '/',
+          await createToast(args, {
+            description: `${error}`,
+            title: 'Unknown exception',
+            type: 'error',
+          }),
+        )
+    }
+  }
+}
+
+export async function loader(args: Route.LoaderArgs) {
+  const lists = await getListsCookie(args, 'nullable').get()
+
+  return { lists }
+}
+
+export default function Home() {
+  const [text, setText] = React.useState('')
+
+  return (
+    <>
+      <title>Lists</title>
+      <meta
+        name="description"
+        content="An application to make various kinds of lists."
+      />
+      <div className="flex items-center justify-center p-4 pt-16">
+        <Card className="w-full max-w-md">
+          <CardContent className="space-y-6 p-8 text-center">
+            <div>
+              <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-orange-100">
+                <Icon
+                  className="size-8 text-orange-600"
+                  name="unordered-list"
+                />
+              </div>
+              <h2 className="mb-2 font-semibold text-2xl text-gray-900">
+                Add your first item
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Start building your list by adding your first item. You can
+                organize and manage everything from here.
+              </p>
+            </div>
+            <Form className="space-y-4" method="post">
+              <div className="space-y-2">
+                <Input
+                  autoFocus
+                  className="text-center"
+                  name="entry"
+                  onChange={(event) => setText(event.target.value)}
+                  placeholder="What do you want to add?"
+                  type="text"
+                  value={text}
+                />
+              </div>
+              <Button
+                className="w-full gap-2"
+                disabled={text.trim() === ''}
+                type="submit"
+              >
+                <Icon className="size-4" name="plus" />
+                Add Item
+              </Button>
+            </Form>
+            <div className="border-gray-200 border-t pt-6">
+              <p className="text-gray-500 text-xs">
+                You can add more items and create additional lists later.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </>
+  )
+}

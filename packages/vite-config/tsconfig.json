@@ -1,0 +1,4 @@
+{
+  "extends": "@wyze/typescript-config/node",
+  "include": ["src/index.ts"]
+}

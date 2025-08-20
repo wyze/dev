@@ -1,0 +1,76 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}
+
+permissions:
+  contents: read
+  deployments: write
+  packages: read
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Deploy to Cloudflare Workers
+    strategy:
+      matrix:
+        app: [lists]
+        include:
+          - app: lists
+            env_secret: LISTS_ENV
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Cache Turborepo
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-build-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-build-
+
+      - name: Build
+        run: pnpm build
+
+      - name: Import secrets
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: secret bulk .env
+          preCommands: echo ${{ secrets[matrix.env_secret] }} > .env
+          workingDirectory: apps/${{ matrix.app }}
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/${{ matrix.app }}
