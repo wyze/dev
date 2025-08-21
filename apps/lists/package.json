@@ -8,7 +8,7 @@
     "check": "biome check --write .",
     "dev": "react-router dev",
     "preview": "vite preview",
-    "typecheck": "pnpm typegen && tsc -b",
+    "typecheck": "tsc -b",
     "typegen": "pnpm \"/^typegen:.*/\"",
     "typegen:cf": "wrangler types",
     "typegen:rr": "react-router typegen"

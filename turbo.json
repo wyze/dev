@@ -2,8 +2,8 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": {
-      "outputs": ["build/**", ".wrangler/**"],
-      "dependsOn": ["typegen", "^build"]
+      "dependsOn": ["typegen", "^build"],
+      "outputs": ["build/**", ".wrangler/**"]
     },
     "check": {
       "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/biome.json"],
@@ -20,11 +20,12 @@
       "dependsOn": ["^preview"]
     },
     "typecheck": {
-      "dependsOn": ["typegen", "^typecheck"]
+      "dependsOn": ["typegen", "^typecheck"],
+      "outputs": ["*.tsbuildinfo"]
     },
     "typegen": {
-      "outputs": [".react-router/**", "worker-configuration.d.ts"],
-      "dependsOn": ["^typegen"]
+      "dependsOn": ["^typegen"],
+      "outputs": [".react-router/**", "worker-configuration.d.ts"]
     }
   }
 }
