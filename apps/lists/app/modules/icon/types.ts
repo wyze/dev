@@ -6,6 +6,9 @@ export const iconNames = [
   'plus',
   'home',
   'file-error',
+  'edit',
+  'close',
+  'check-2',
 ] as const
 
 export type IconName = (typeof iconNames)[number]

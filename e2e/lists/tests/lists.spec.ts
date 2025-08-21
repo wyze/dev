@@ -24,3 +24,31 @@ test('shows empty space when no lists present', async ({ page }) => {
   await expect(page.getByText('1 item')).toBeVisible()
   await expect(page.getByText('Write more tests.')).toBeVisible()
 })
+
+test('able to edit title of existing list', async ({ page }) => {
+  await page.goto('/')
+
+  await page
+    .getByPlaceholder('What do you want to add?')
+    .fill('Edit my list title.')
+
+  await page.getByRole('button', { name: 'Add Item' }).click()
+
+  await page.waitForURL('/lists/*')
+
+  const title = `${await page.locator('[data-slot=card-title]').textContent()}`
+
+  await expect(page.getByText(title)).toBeVisible()
+
+  await page.getByRole('button', { name: 'Edit title' }).click()
+
+  await page.getByPlaceholder('Enter a title...').fill('My test title')
+
+  await page.getByRole('button', { name: 'Save' }).click()
+
+  await expect(
+    page.getByText('Title of this list has been updated.'),
+  ).toBeVisible()
+
+  await expect(page.getByText('My test title')).toBeVisible()
+})
