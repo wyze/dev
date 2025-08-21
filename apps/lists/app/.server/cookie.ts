@@ -1,12 +1,12 @@
 import { type CookieSerializeOptions, createCookie } from 'react-router'
 import * as v from 'valibot'
 
-import type { HelperArgs } from '~/types'
+import type { ServerArgs } from '~/types'
 
 import { getEnv } from './env'
 
 export function create<TInput, TOutput>(
-  { context, request }: HelperArgs,
+  { context, request }: ServerArgs,
   name: string,
   schema: v.GenericSchema<TInput, TOutput>,
 ) {

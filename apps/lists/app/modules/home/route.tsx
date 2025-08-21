@@ -13,12 +13,12 @@ import { randomItem } from '~/helpers/random-item'
 import { Icon } from '~/modules/icon'
 import { getListsCookie } from '~/modules/list/helpers/get-lists-cookie'
 import { ListsSchema } from '~/modules/list/helpers/schemas'
-import type { HelperArgs } from '~/types'
+import type { ServerArgs } from '~/types'
 
 import type { Route } from './+types/route'
 
 function redirectWithErrorToast(
-  args: HelperArgs,
+  args: ServerArgs,
   title: string,
   description?: string,
 ) {

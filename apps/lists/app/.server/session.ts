@@ -1,7 +1,7 @@
 import { createCookieSessionStorage } from 'react-router'
 import * as v from 'valibot'
 
-import type { HelperArgs } from '~/types'
+import type { ServerArgs } from '~/types'
 
 import { getEnv } from './env'
 
@@ -9,7 +9,7 @@ export function create<TInput, TOutput>(
   name: string,
   schema: v.GenericSchema<TInput, TOutput>,
 ) {
-  return async function manage({ context, request }: HelperArgs) {
+  return async function manage({ context, request }: ServerArgs) {
     const storage = createCookieSessionStorage({
       cookie: {
         name,

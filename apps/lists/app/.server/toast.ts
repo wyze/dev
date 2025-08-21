@@ -3,7 +3,7 @@ import { redirect } from 'react-router'
 import * as v from 'valibot'
 
 import { combineHeaders } from '~/helpers/combine-headers'
-import type { HelperArgs } from '~/types'
+import type { ServerArgs } from '~/types'
 
 import { create } from './session'
 
@@ -22,7 +22,7 @@ type ToastInput = v.InferInput<typeof ToastSchema>
 
 const getSession = create('toast', v.optional(v.nullable(ToastSchema), null))
 
-export async function createToast(args: HelperArgs, input: ToastInput) {
+export async function createToast(args: ServerArgs, input: ToastInput) {
   const session = await getSession(args)
 
   session.flash(input)
@@ -41,7 +41,7 @@ export async function getToast(args: {
 }
 
 export async function redirectWithToast(
-  args: HelperArgs,
+  args: ServerArgs,
   url: string,
   input: ToastInput,
   init?: ResponseInit,
