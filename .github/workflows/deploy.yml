@@ -59,8 +59,19 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Hash environment variables
+        run: echo "ENV_HASH=$(echo -n ${{ secrets[matrix.env_secret] }} | sha384sum)" >> $GITHUB_ENV
+
+      - name: Cache environment variables
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        id: env-cache
+        with:
+          path: readme.md
+          key: ${{ runner.os }}-env-${{ env.ENV_HASH }}
+
       - name: Import secrets
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
+        if: steps.env-cache.outputs.cache-hit != 'true'
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -68,8 +79,16 @@ jobs:
           preCommands: echo ${{ secrets[matrix.env_secret] }} > .env
           workingDirectory: apps/${{ matrix.app }}
 
+      - name: Cache deploy
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        id: deploy-cache
+        with:
+          path: apps/${{ matrix.app }}/build
+          key: ${{ runner.os }}-deploy-${{ hashFiles(format('apps/{0}/.turbo/turbo-build.log', matrix.app)) }}
+
       - name: Deploy
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
+        if: steps.deploy-cache.outputs.cache-hit != 'true'
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

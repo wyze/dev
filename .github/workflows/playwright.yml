@@ -51,14 +51,26 @@ jobs:
         uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-build-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-e2e-${{ github.sha }}
           restore-keys: |
+            ${{ runner.os }}-turbo-e2e-
             ${{ runner.os }}-turbo-build-
 
       - name: Build
         run: pnpm build
 
-      - name: Install Playwright Browsers
+      - name: Get Playwright version
+        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./e2e/lists/package.json').devDependencies['@playwright/test'])")" >> $GITHUB_ENV
+
+      - name: Cache Playwright
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter=${{ matrix.app }}-e2e exec playwright install chromium
 
       - name: Import secrets
