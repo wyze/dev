@@ -24,21 +24,17 @@ export function create<TInput, TOutput>(
 
     return {
       async commit() {
-        return {
-          headers: {
-            'set-cookie': await storage.commitSession(session),
-          },
-        }
+        return new Headers({
+          'set-cookie': await storage.commitSession(session),
+        })
       },
       delete() {
         return session.unset(name)
       },
       async destroy() {
-        return {
-          headers: {
-            'set-cookie': await storage.destroySession(session),
-          },
-        }
+        return new Headers({
+          'set-cookie': await storage.destroySession(session),
+        })
       },
       exists() {
         return session.has(name)

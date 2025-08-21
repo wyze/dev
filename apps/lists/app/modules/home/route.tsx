@@ -7,14 +7,27 @@ import * as React from 'react'
 import { Form, redirect } from 'react-router'
 import * as v from 'valibot'
 
-import { createToast } from '~/.server/toast'
+import { redirectWithToast } from '~/.server/toast'
 import { capitalize } from '~/helpers/capitalize'
 import { randomItem } from '~/helpers/random-item'
 import { Icon } from '~/modules/icon'
 import { getListsCookie } from '~/modules/list/helpers/get-lists-cookie'
 import { ListsSchema } from '~/modules/list/helpers/schemas'
+import type { HelperArgs } from '~/types'
 
 import type { Route } from './+types/route'
+
+function redirectWithErrorToast(
+  args: HelperArgs,
+  title: string,
+  description?: string,
+) {
+  return redirectWithToast(args, '/', {
+    description,
+    title,
+    type: 'error',
+  })
+}
 
 export async function action(args: Route.ActionArgs) {
   const cookie = getListsCookie(args, 'nullable')
@@ -29,13 +42,10 @@ export async function action(args: Route.ActionArgs) {
   )
 
   if (!label.success) {
-    return redirect(
-      '/',
-      await createToast(args, {
-        description: label.issues.map((issue) => issue.message).join(' '),
-        title: 'Entry parse error',
-        type: 'error',
-      }),
+    return redirectWithErrorToast(
+      args,
+      'Entry parse error',
+      label.issues.map((issue) => issue.message).join(' '),
     )
   }
 
@@ -52,36 +62,19 @@ export async function action(args: Route.ActionArgs) {
       { entries: [{ id: uuid(), label: label.output }], id, name },
     ])
 
-    return redirect(`lists/${id}`, await cookie.save(lists))
+    return redirect(`lists/${id}`, { headers: await cookie.save(lists) })
   } catch (error) {
     switch (true) {
       case error instanceof v.ValiError:
-        return redirect(
-          '/',
-          await createToast(args, {
-            description: error.issues.map((issue) => issue.message).join(' '),
-            title: 'List parse error',
-            type: 'error',
-          }),
+        return redirectWithErrorToast(
+          args,
+          'List parse error',
+          error.issues.map((issue) => issue.message).join(' '),
         )
       case error instanceof Error:
-        return redirect(
-          '/',
-          await createToast(args, {
-            description: error.message,
-            title: 'Generic error',
-            type: 'error',
-          }),
-        )
+        return redirectWithErrorToast(args, 'Generic error', error.message)
       default:
-        return redirect(
-          '/',
-          await createToast(args, {
-            description: `${error}`,
-            title: 'Unknown exception',
-            type: 'error',
-          }),
-        )
+        return redirectWithErrorToast(args, 'Unknown exception', `${error}`)
     }
   }
 }

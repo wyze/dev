@@ -23,9 +23,9 @@ export function create<TInput, TOutput>(
       return v.parse(schema, await cookie.parse(request.headers.get('cookie')))
     },
     async save(value: TInput, options?: CookieSerializeOptions) {
-      return {
-        headers: { 'set-cookie': await cookie.serialize(value, options) },
-      }
+      return new Headers({
+        'set-cookie': await cookie.serialize(value, options),
+      })
     },
   }
 }

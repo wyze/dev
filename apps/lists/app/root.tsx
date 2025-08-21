@@ -31,7 +31,7 @@ import { Icon } from './modules/icon'
 export async function loader(args: Route.LoaderArgs) {
   const { headers, toast } = await getToast(args)
 
-  return data({ toast }, headers)
+  return data({ toast }, { headers })
 }
 
 function useToast() {

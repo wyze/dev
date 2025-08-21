@@ -1,5 +1,9 @@
 import type { AppLoadContext } from 'react-router'
+import { redirect } from 'react-router'
 import * as v from 'valibot'
+
+import { combineHeaders } from '~/helpers/combine-headers'
+import type { HelperArgs } from '~/types'
 
 import { create } from './session'
 
@@ -14,25 +18,36 @@ const ToastSchema = v.object({
   type: v.picklist(['error', 'info', 'success', 'warning']),
 })
 
-const session = create('toast', v.optional(v.nullable(ToastSchema), null))
+type ToastInput = v.InferInput<typeof ToastSchema>
 
-export async function createToast(
-  args: { context: AppLoadContext; request: Request },
-  input: v.InferInput<typeof ToastSchema>,
-) {
-  const s = await session(args)
+const getSession = create('toast', v.optional(v.nullable(ToastSchema), null))
 
-  s.flash(input)
+export async function createToast(args: HelperArgs, input: ToastInput) {
+  const session = await getSession(args)
 
-  return s.commit()
+  session.flash(input)
+
+  return session.commit()
 }
 
 export async function getToast(args: {
   context: AppLoadContext
   request: Request
 }) {
-  const s = await session(args)
-  const toast = s.get()
+  const session = await getSession(args)
+  const toast = session.get()
 
-  return { headers: await s.destroy(), toast }
+  return { headers: await session.destroy(), toast }
+}
+
+export async function redirectWithToast(
+  args: HelperArgs,
+  url: string,
+  input: ToastInput,
+  init?: ResponseInit,
+) {
+  return redirect(url, {
+    ...init,
+    headers: combineHeaders(init?.headers, await createToast(args, input)),
+  })
 }
