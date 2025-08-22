@@ -13,6 +13,7 @@ import * as v from 'valibot'
 
 import { createToast } from '~/.server/toast'
 import { combineHeaders } from '~/helpers/combine-headers'
+import { createUuid } from '~/helpers/create-uuid'
 import { pluralize } from '~/helpers/pluralize'
 import { Icon } from '~/modules/icon'
 
@@ -20,22 +21,32 @@ import type { Route } from './+types/details'
 import { getListsCookie } from './helpers/get-lists-cookie'
 
 type State = {
+  add: string
   selected: 'title' | null
   text: string
 }
 
 type Action =
   | { type: 'done' }
-  | { type: 'select'; data: State }
-  | { type: 'type'; data: State['text'] }
+  | { type: 'select'; data: Pick<State, 'selected' | 'text'> }
+  | { type: 'set-add' | 'set-text'; data: State['text'] }
 
-const FormSchema = v.object({
-  intent: v.literal('update-title'),
-  text: v.pipe(
-    v.string('Title must be a string.'),
-    v.nonEmpty('Title must not be empty.'),
-  ),
-})
+const FormSchema = v.variant('intent', [
+  v.object({
+    intent: v.literal('add-item'),
+    text: v.pipe(
+      v.string('Item must be a string.'),
+      v.nonEmpty('Item must not be empty.'),
+    ),
+  }),
+  v.object({
+    intent: v.literal('update-title'),
+    text: v.pipe(
+      v.string('Title must be a string.'),
+      v.nonEmpty('Title must not be empty.'),
+    ),
+  }),
+])
 
 export async function action(args: Route.ActionArgs) {
   const cookie = getListsCookie(args, 'standard')
@@ -51,6 +62,25 @@ export async function action(args: Route.ActionArgs) {
   }
 
   switch (form.intent) {
+    case 'add-item':
+      return data(null, {
+        headers: combineHeaders(
+          await createToast(args, {
+            description: 'The item has been added to the list.',
+            title: 'Add Item Successful',
+            type: 'success',
+          }),
+          await cookie.save([
+            {
+              ...list,
+              entries: list.entries.concat({
+                id: createUuid(),
+                label: form.text,
+              }),
+            },
+          ]),
+        ),
+      })
     case 'update-title':
       return data(null, {
         headers: combineHeaders(
@@ -76,15 +106,17 @@ export async function loader(args: Route.LoaderArgs) {
   return { list }
 }
 
-const initialState = { selected: null, text: '' } satisfies State
+const initialState = { add: '', selected: null, text: '' } satisfies State
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'done':
       return initialState
     case 'select':
-      return action.data
-    case 'type':
+      return { ...state, ...action.data }
+    case 'set-add':
+      return { ...state, add: action.data }
+    case 'set-text':
       return { ...state, text: action.data }
   }
 }
@@ -95,10 +127,19 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
   const submit = useSubmit()
 
   function save() {
-    submit(
-      { intent: 'update-title', text: state.text },
-      { flushSync: true, method: 'post' },
-    )
+    if (state.selected === 'title') {
+      submit(
+        { intent: 'update-title', text: state.text },
+        { flushSync: true, method: 'post' },
+      )
+    }
+
+    if (state.selected === null) {
+      submit(
+        { intent: 'add-item', text: state.add },
+        { flushSync: true, method: 'post' },
+      )
+    }
 
     dispatch({ type: 'done' })
   }
@@ -116,7 +157,7 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                     autoFocus
                     className="font-semibold"
                     onChange={(event) =>
-                      dispatch({ type: 'type', data: event.target.value })
+                      dispatch({ type: 'set-text', data: event.target.value })
                     }
                     onKeyDown={(event) => {
                       switch (event.key) {
@@ -130,7 +171,11 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                     required
                     value={state.text}
                   />
-                  <Button onClick={save} size="icon-sm">
+                  <Button
+                    disabled={state.text.trim() === ''}
+                    onClick={save}
+                    size="icon-sm"
+                  >
                     <Icon name="check-2" />
                     <span className="sr-only">Save</span>
                   </Button>
@@ -166,7 +211,32 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
               {pluralize('item', list.entries.length)}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
+            <div className="flex gap-2">
+              <Input
+                className="flex-1"
+                onChange={(event) =>
+                  dispatch({ type: 'set-add', data: event.target.value })
+                }
+                onKeyDown={(event) => {
+                  switch (event.key) {
+                    case 'Enter':
+                      return save()
+                  }
+                }}
+                placeholder="Add new item..."
+                value={state.add}
+              />
+              <Button
+                disabled={state.add.trim() === ''}
+                onClick={save}
+                size="icon"
+                type="submit"
+              >
+                <Icon name="plus" />
+                <span className="sr-only">Add item</span>
+              </Button>
+            </div>
             <div className="space-y-2">
               {list.entries.map((entry) => (
                 <div

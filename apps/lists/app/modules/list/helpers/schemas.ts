@@ -1,12 +1,6 @@
 import * as v from 'valibot'
 
-const UuidSchema = v.pipe(
-  v.string('Must be a string.'),
-  v.uuid('Must be a uuid.'),
-  v.brand('Uuid'),
-)
-
-export type Uuid = v.InferOutput<typeof UuidSchema>
+import { UuidSchema } from '~/helpers/create-uuid'
 
 export const ListSchema = v.object({
   entries: v.pipe(

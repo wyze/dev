@@ -1,4 +1,3 @@
-import { uuid } from '@cfworker/uuid'
 import { Button } from '@wyze/ui/button'
 import { Card, CardContent } from '@wyze/ui/card'
 import { Input } from '@wyze/ui/input'
@@ -9,6 +8,7 @@ import * as v from 'valibot'
 
 import { redirectWithToast } from '~/.server/toast'
 import { capitalize } from '~/helpers/capitalize'
+import { createUuid } from '~/helpers/create-uuid'
 import { randomItem } from '~/helpers/random-item'
 import { Icon } from '~/modules/icon'
 import { getListsCookie } from '~/modules/list/helpers/get-lists-cookie'
@@ -57,9 +57,9 @@ export async function action(args: Route.ActionArgs) {
   )
 
   try {
-    const id = uuid()
+    const id = createUuid()
     const lists = v.parse(ListsSchema, [
-      { entries: [{ id: uuid(), label: label.output }], id, name },
+      { entries: [{ id: createUuid(), label: label.output }], id, name },
     ])
 
     return redirect(`lists/${id}`, { headers: await cookie.save(lists) })

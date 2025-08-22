@@ -52,3 +52,25 @@ test('able to edit title of existing list', async ({ page }) => {
 
   await expect(page.getByText('My test title')).toBeVisible()
 })
+
+test('able to add a new item to a list', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByPlaceholder('What do you want to add?').fill('Test item add.')
+
+  await page.getByRole('button', { name: 'Add Item' }).click()
+
+  await page.waitForURL('/lists/*')
+
+  await page.getByPlaceholder('Add new item...').fill('New item.')
+
+  await page.getByRole('button', { name: 'Add item' }).click()
+
+  await expect(
+    page.getByText('The item has been added to the list.'),
+  ).toBeVisible()
+
+  await expect(page.getByText('2 items')).toBeVisible()
+  await expect(page.getByText('New item.')).toBeVisible()
+  await expect(page.getByPlaceholder('Add new item...')).toBeEmpty()
+})
