@@ -222,16 +222,14 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                     onClick={save}
                     size="icon-sm"
                   >
-                    <Icon name="check-2" />
-                    <span className="sr-only">Save</span>
+                    <Icon name="check-2" reader="Save" />
                   </Button>
                   <Button
                     onClick={() => dispatch({ type: 'done' })}
                     size="icon-sm"
                     variant="outline"
                   >
-                    <Icon name="close" />
-                    <span className="sr-only">Cancel</span>
+                    <Icon name="close" reader="Cancel" />
                   </Button>
                 </div>
               ) : (
@@ -247,8 +245,7 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                     size="icon-sm"
                     variant="ghost"
                   >
-                    <Icon name="edit" />
-                    <span className="sr-only">Edit title</span>
+                    <Icon name="edit" reader="Edit title" />
                   </Button>
                 </div>
               )}
@@ -271,11 +268,10 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
               <Button
                 disabled={state.add.trim() === ''}
                 onClick={save}
-                size="icon"
+                size="icon-sm"
                 type="submit"
               >
-                <Icon name="plus" />
-                <span className="sr-only">Add item</span>
+                <Icon name="plus" reader="Add item" />
               </Button>
             </div>
             <div className="space-y-2">
@@ -302,13 +298,13 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                       <Button
                         disabled={state.text.trim() === ''}
                         onClick={save}
-                        size="icon"
+                        size="icon-sm"
                       >
                         <Icon name="check-2" reader="Save" />
                       </Button>
                       <Button
                         onClick={() => dispatch({ type: 'done' })}
-                        size="icon"
+                        size="icon-sm"
                         variant="outline"
                       >
                         <Icon name="close" reader="Cancel" />
