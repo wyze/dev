@@ -280,7 +280,7 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                   key={entry.id}
                   className="group flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
                 >
-                  {(state.selected ?? '').length > 5 ? (
+                  {state.selected === entry.id ? (
                     <>
                       <Input
                         autoFocus

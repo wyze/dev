@@ -51,6 +51,17 @@ test('able to edit entry of existing list', async ({ listsPage: _, page }) => {
   await expect(page.getByText('I have been edited.')).toBeVisible()
 })
 
+test('ensure we can only edit one item at a time', async ({
+  listsPage,
+  page,
+}) => {
+  await listsPage.add('New item.')
+  await page.getByRole('button', { name: 'Edit item' }).first().click()
+
+  const input = page.getByPlaceholder('What would you like to do?')
+  await expect(input).toHaveCount(1)
+})
+
 test('able to add a new item to a list', async ({ listsPage, page }) => {
   await listsPage.add('New item.')
   await expect(page.getByText('2 items')).toBeVisible()
