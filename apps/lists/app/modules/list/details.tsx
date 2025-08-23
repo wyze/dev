@@ -40,6 +40,10 @@ const FormSchema = v.variant('intent', [
     ),
   }),
   v.object({
+    intent: v.literal('delete-item'),
+    id: UuidSchema,
+  }),
+  v.object({
     intent: v.literal('update-item'),
     id: UuidSchema,
     text: v.pipe(
@@ -85,6 +89,22 @@ export async function action(args: Route.ActionArgs) {
                 id: createUuid(),
                 label: form.text,
               }),
+            },
+          ]),
+        ),
+      })
+    case 'delete-item':
+      return data(null, {
+        headers: combineHeaders(
+          await createToast(args, {
+            description: 'The item has been removed from the list.',
+            title: 'Delete Item Successful',
+            type: 'success',
+          }),
+          await cookie.save([
+            {
+              ...list,
+              entries: list.entries.filter((entry) => entry.id !== form.id),
             },
           ]),
         ),
@@ -299,16 +319,30 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                       <span className="flex-1">{entry.label}</span>
                       <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                         <Button
+                          className="border border-transparent hover:border-accent-foreground/50"
                           onClick={() =>
                             dispatch({
                               type: 'select',
                               data: { selected: entry.id, text: entry.label },
                             })
                           }
-                          size="icon"
+                          size="icon-sm"
                           variant="ghost"
                         >
                           <Icon name="edit" reader="Edit item" />
+                        </Button>
+                        <Button
+                          className="transition-colors hover:bg-destructive hover:text-destructive-foreground"
+                          onClick={() =>
+                            submit(
+                              { intent: 'delete-item', id: entry.id },
+                              { method: 'post' },
+                            )
+                          }
+                          size="icon-sm"
+                          variant="ghost"
+                        >
+                          <Icon name="trash" reader="Delete item" />
                         </Button>
                       </div>
                     </>

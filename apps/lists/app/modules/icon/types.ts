@@ -2,6 +2,7 @@
 
 export const iconNames = [
   'unordered-list',
+  'trash',
   'refresh-3',
   'plus',
   'home',
