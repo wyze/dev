@@ -16,33 +16,8 @@ permissions:
   packages: read
 
 jobs:
-  cache-and-install:
-    name: Setup Cache
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          fetch-depth: 2
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
-        with:
-          run_install: false
-
-      - name: Install Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 22
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        shell: bash
-        run: pnpm install --frozen-lockfile --prefer-offline
-
   check:
     name: Check
-    needs: cache-and-install
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -78,7 +53,6 @@ jobs:
 
   typecheck:
     name: Typecheck
-    needs: cache-and-install
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
