@@ -13,7 +13,7 @@ import * as v from 'valibot'
 
 import { createToast } from '~/.server/toast'
 import { combineHeaders } from '~/helpers/combine-headers'
-import { createUuid } from '~/helpers/create-uuid'
+import { createUuid, type Uuid, UuidSchema } from '~/helpers/create-uuid'
 import { pluralize } from '~/helpers/pluralize'
 import { Icon } from '~/modules/icon'
 
@@ -22,7 +22,7 @@ import { getListsCookie } from './helpers/get-lists-cookie'
 
 type State = {
   add: string
-  selected: 'title' | null
+  selected: Uuid | 'title' | null
   text: string
 }
 
@@ -34,6 +34,14 @@ type Action =
 const FormSchema = v.variant('intent', [
   v.object({
     intent: v.literal('add-item'),
+    text: v.pipe(
+      v.string('Item must be a string.'),
+      v.nonEmpty('Item must not be empty.'),
+    ),
+  }),
+  v.object({
+    intent: v.literal('update-item'),
+    id: UuidSchema,
     text: v.pipe(
       v.string('Item must be a string.'),
       v.nonEmpty('Item must not be empty.'),
@@ -77,6 +85,24 @@ export async function action(args: Route.ActionArgs) {
                 id: createUuid(),
                 label: form.text,
               }),
+            },
+          ]),
+        ),
+      })
+    case 'update-item':
+      return data(null, {
+        headers: combineHeaders(
+          await createToast(args, {
+            description: 'The list entry label was updated.',
+            title: 'Update Successful',
+            type: 'success',
+          }),
+          await cookie.save([
+            {
+              ...list,
+              entries: list.entries.map((entry) =>
+                entry.id === form.id ? { ...entry, label: form.text } : entry,
+              ),
             },
           ]),
         ),
@@ -126,20 +152,27 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
   const [state, dispatch] = React.useReducer(reducer, initialState)
   const submit = useSubmit()
 
+  function keydown(event: React.KeyboardEvent<HTMLInputElement>) {
+    switch (event.key) {
+      case 'Enter':
+        return save()
+      case 'Escape':
+        return dispatch({ type: 'done' })
+    }
+  }
+
   function save() {
+    let payload: v.InferOutput<typeof FormSchema>
+
     if (state.selected === 'title') {
-      submit(
-        { intent: 'update-title', text: state.text },
-        { flushSync: true, method: 'post' },
-      )
+      payload = { intent: 'update-title', text: state.text }
+    } else if (state.selected === null) {
+      payload = { intent: 'add-item', text: state.add }
+    } else {
+      payload = { intent: 'update-item', id: state.selected, text: state.text }
     }
 
-    if (state.selected === null) {
-      submit(
-        { intent: 'add-item', text: state.add },
-        { flushSync: true, method: 'post' },
-      )
-    }
+    submit(payload, { flushSync: true, method: 'post' })
 
     dispatch({ type: 'done' })
   }
@@ -159,14 +192,7 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                     onChange={(event) =>
                       dispatch({ type: 'set-text', data: event.target.value })
                     }
-                    onKeyDown={(event) => {
-                      switch (event.key) {
-                        case 'Enter':
-                          return save()
-                        case 'Escape':
-                          return dispatch({ type: 'done' })
-                      }
-                    }}
+                    onKeyDown={keydown}
                     placeholder="Enter a title..."
                     required
                     value={state.text}
@@ -218,12 +244,7 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                 onChange={(event) =>
                   dispatch({ type: 'set-add', data: event.target.value })
                 }
-                onKeyDown={(event) => {
-                  switch (event.key) {
-                    case 'Enter':
-                      return save()
-                  }
-                }}
+                onKeyDown={keydown}
                 placeholder="Add new item..."
                 value={state.add}
               />
@@ -243,7 +264,55 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                   key={entry.id}
                   className="group flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
                 >
-                  <span className="flex-1">{entry.label}</span>
+                  {(state.selected ?? '').length > 5 ? (
+                    <>
+                      <Input
+                        autoFocus
+                        className="flex-1"
+                        onChange={(event) =>
+                          dispatch({
+                            type: 'set-text',
+                            data: event.target.value,
+                          })
+                        }
+                        onKeyDown={keydown}
+                        placeholder="What would you like to do?"
+                        value={state.text}
+                      />
+                      <Button
+                        disabled={state.text.trim() === ''}
+                        onClick={save}
+                        size="icon"
+                      >
+                        <Icon name="check-2" reader="Save" />
+                      </Button>
+                      <Button
+                        onClick={() => dispatch({ type: 'done' })}
+                        size="icon"
+                        variant="outline"
+                      >
+                        <Icon name="close" reader="Cancel" />
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="flex-1">{entry.label}</span>
+                      <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                        <Button
+                          onClick={() =>
+                            dispatch({
+                              type: 'select',
+                              data: { selected: entry.id, text: entry.label },
+                            })
+                          }
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <Icon name="edit" reader="Edit item" />
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
