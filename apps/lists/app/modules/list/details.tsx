@@ -18,6 +18,7 @@ import { pluralize } from '~/helpers/pluralize'
 import { Icon } from '~/modules/icon'
 
 import type { Route } from './+types/details'
+import { Item } from './components/item'
 import { getListsCookie } from './helpers/get-lists-cookie'
 
 type State = {
@@ -172,30 +173,57 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
   const [state, dispatch] = React.useReducer(reducer, initialState)
   const submit = useSubmit()
 
-  function keydown(event: React.KeyboardEvent<HTMLInputElement>) {
-    switch (event.key) {
-      case 'Enter':
-        return save()
-      case 'Escape':
-        return dispatch({ type: 'done' })
-    }
-  }
+  const save = React.useCallback(
+    function save() {
+      let payload: v.InferOutput<typeof FormSchema>
 
-  function save() {
-    let payload: v.InferOutput<typeof FormSchema>
+      if (state.selected === 'title') {
+        payload = { intent: 'update-title', text: state.text }
+      } else if (state.selected === null) {
+        payload = { intent: 'add-item', text: state.add }
+      } else {
+        payload = {
+          intent: 'update-item',
+          id: state.selected,
+          text: state.text,
+        }
+      }
 
-    if (state.selected === 'title') {
-      payload = { intent: 'update-title', text: state.text }
-    } else if (state.selected === null) {
-      payload = { intent: 'add-item', text: state.add }
-    } else {
-      payload = { intent: 'update-item', id: state.selected, text: state.text }
-    }
+      submit(payload, { flushSync: true, method: 'post' })
 
-    submit(payload, { flushSync: true, method: 'post' })
+      dispatch({ type: 'done' })
+    },
+    [state.add, state.selected, state.text, submit],
+  )
 
-    dispatch({ type: 'done' })
-  }
+  const keydown = React.useCallback(
+    function keydown(event: React.KeyboardEvent<HTMLInputElement>) {
+      switch (event.key) {
+        case 'Enter':
+          return save()
+        case 'Escape':
+          return dispatch({ type: 'done' })
+      }
+    },
+    [save],
+  )
+
+  const actions = React.useMemo(
+    () => ({
+      done() {
+        dispatch({ type: 'done' })
+      },
+      keydown,
+      save,
+      select(selected: Uuid, text: string) {
+        dispatch({ type: 'select', data: { selected, text } })
+      },
+      type(data: string) {
+        dispatch({ type: 'set-text', data })
+      },
+    }),
+    [keydown, save],
+  )
 
   return (
     <>
@@ -276,74 +304,16 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
             </div>
             <div className="space-y-2">
               {list.entries.map((entry) => (
-                <div
+                <Item
                   key={entry.id}
-                  className="group flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
-                >
-                  {state.selected === entry.id ? (
-                    <>
-                      <Input
-                        autoFocus
-                        className="flex-1"
-                        onChange={(event) =>
-                          dispatch({
-                            type: 'set-text',
-                            data: event.target.value,
-                          })
-                        }
-                        onKeyDown={keydown}
-                        placeholder="What would you like to do?"
-                        value={state.text}
-                      />
-                      <Button
-                        disabled={state.text.trim() === ''}
-                        onClick={save}
-                        size="icon-sm"
-                      >
-                        <Icon name="check-2" reader="Save" />
-                      </Button>
-                      <Button
-                        onClick={() => dispatch({ type: 'done' })}
-                        size="icon-sm"
-                        variant="outline"
-                      >
-                        <Icon name="close" reader="Cancel" />
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <span className="flex-1">{entry.label}</span>
-                      <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                        <Button
-                          className="border border-transparent hover:border-accent-foreground/50"
-                          onClick={() =>
-                            dispatch({
-                              type: 'select',
-                              data: { selected: entry.id, text: entry.label },
-                            })
-                          }
-                          size="icon-sm"
-                          variant="ghost"
-                        >
-                          <Icon name="edit" reader="Edit item" />
-                        </Button>
-                        <Button
-                          className="transition-colors hover:bg-destructive hover:text-destructive-foreground"
-                          onClick={() =>
-                            submit(
-                              { intent: 'delete-item', id: entry.id },
-                              { method: 'post' },
-                            )
-                          }
-                          size="icon-sm"
-                          variant="ghost"
-                        >
-                          <Icon name="trash" reader="Delete item" />
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
+                  actions={actions}
+                  entry={entry}
+                  state={
+                    state.selected === entry.id
+                      ? { type: 'selected', text: state.text }
+                      : { type: 'default' }
+                  }
+                />
               ))}
             </div>
           </CardContent>
