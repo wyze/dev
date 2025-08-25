@@ -15,6 +15,9 @@
   },
   "dependencies": {
     "@cfworker/uuid": "^4.0.4",
+    "@dnd-kit/abstract": "~0.1.21",
+    "@dnd-kit/helpers": "~0.1.21",
+    "@dnd-kit/react": "~0.1.21",
     "@wyze/ui": "workspace:*",
     "isbot": "^5.1.30",
     "mnemonic-words": "^2.0.0",

@@ -8,6 +8,7 @@ export const iconNames = [
   'home',
   'file-error',
   'edit',
+  'dot-grid-vertical-2x3',
   'close',
   'check-2',
 ] as const

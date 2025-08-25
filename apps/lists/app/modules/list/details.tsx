@@ -1,3 +1,7 @@
+import type { Modifiers } from '@dnd-kit/abstract'
+import { RestrictToVerticalAxis } from '@dnd-kit/abstract/modifiers'
+import { move } from '@dnd-kit/helpers'
+import { DragDropProvider } from '@dnd-kit/react'
 import { Button } from '@wyze/ui/button'
 import {
   Card,
@@ -8,7 +12,7 @@ import {
 } from '@wyze/ui/card'
 import { Input } from '@wyze/ui/input'
 import * as React from 'react'
-import { data, useSubmit } from 'react-router'
+import { data, useNavigation, useSubmit } from 'react-router'
 import * as v from 'valibot'
 
 import { createToast } from '~/.server/toast'
@@ -43,6 +47,17 @@ const FormSchema = v.variant('intent', [
   v.object({
     intent: v.literal('delete-item'),
     id: UuidSchema,
+  }),
+  v.object({
+    intent: v.literal('reorder-items'),
+    order: v.pipe(
+      v.string(),
+      v.transform((value) => value.split(',')),
+      v.pipe(
+        v.array(UuidSchema),
+        v.minLength(1, 'Must have 1 item in the list.'),
+      ),
+    ),
   }),
   v.object({
     intent: v.literal('update-item'),
@@ -110,6 +125,27 @@ export async function action(args: Route.ActionArgs) {
           ]),
         ),
       })
+    case 'reorder-items':
+      return data(null, {
+        headers: combineHeaders(
+          await createToast(args, {
+            description: 'The items have been reordered in the list.',
+            title: 'Reorder Item Successful',
+            type: 'success',
+          }),
+          await cookie.save([
+            {
+              ...list,
+              entries: form.order
+                .map((id) => list.entries.find((entry) => entry.id === id))
+                .filter((entry): entry is NonNullable<typeof entry> =>
+                  Boolean(entry),
+                ),
+            },
+          ]),
+        ),
+      })
+
     case 'update-item':
       return data(null, {
         headers: combineHeaders(
@@ -153,7 +189,11 @@ export async function loader(args: Route.LoaderArgs) {
   return { list }
 }
 
-const initialState = { add: '', selected: null, text: '' } satisfies State
+const initialState = {
+  add: '',
+  selected: null,
+  text: '',
+} satisfies State
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -171,6 +211,7 @@ function reducer(state: State, action: Action): State {
 export default function ListDetails({ loaderData }: Route.ComponentProps) {
   const { list } = loaderData
   const [state, dispatch] = React.useReducer(reducer, initialState)
+  const navigation = useNavigation()
   const submit = useSubmit()
 
   const save = React.useCallback(
@@ -224,6 +265,23 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
     }),
     [keydown, save],
   )
+
+  const entriesHash = list.entries.reduce<
+    Record<Uuid, (typeof list.entries)[number]>
+  >((acc, entry) => {
+    acc[entry.id] = entry
+
+    return acc
+  }, {})
+
+  const entries =
+    navigation.formData?.get('intent') === 'reorder-items'
+      ? (navigation.formData
+          .get('order')
+          ?.toString()
+          .split(',')
+          .map((id) => entriesHash[id as Uuid]) ?? [])
+      : list.entries
 
   return (
     <>
@@ -302,20 +360,38 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                 <Icon name="plus" reader="Add item" />
               </Button>
             </div>
-            <div className="space-y-2">
-              {list.entries.map((entry) => (
-                <Item
-                  key={entry.id}
-                  actions={actions}
-                  entry={entry}
-                  state={
-                    state.selected === entry.id
-                      ? { type: 'selected', text: state.text }
-                      : { type: 'default' }
-                  }
-                />
-              ))}
-            </div>
+            <DragDropProvider
+              modifiers={[RestrictToVerticalAxis] as Modifiers}
+              onDragEnd={(event) => {
+                const moved = move(entries, event)
+
+                if (moved !== entries) {
+                  submit(
+                    {
+                      intent: 'reorder-items',
+                      order: moved.map((item) => item.id),
+                    },
+                    { method: 'post' },
+                  )
+                }
+              }}
+            >
+              <div className="space-y-2">
+                {entries.map((entry, index) => (
+                  <Item
+                    key={entry.id}
+                    actions={actions}
+                    entry={entry}
+                    index={index}
+                    state={
+                      state.selected === entry.id
+                        ? { type: 'selected', text: state.text }
+                        : { type: 'default' }
+                    }
+                  />
+                ))}
+              </div>
+            </DragDropProvider>
           </CardContent>
         </Card>
       </div>

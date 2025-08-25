@@ -79,3 +79,32 @@ test('able to delete an item from a list', async ({ listsPage, page }) => {
   await expect(page.getByText('1 item')).toBeVisible()
   await expect(page.getByText('First item.')).not.toBeVisible()
 })
+
+test('able to reorder items in the list', async ({ listsPage, page }) => {
+  await listsPage.add('New item.')
+
+  const first = await page.getByText('First item.').boundingBox()
+  const second = await page.getByText('New item.').boundingBox()
+
+  if (!first || !second) {
+    return
+  }
+
+  // Built in drag and drop functions did not work
+  await page.mouse.move(first.x + first.width / 2, first.y + first.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(
+    second.x + second.width / 2,
+    second.y + second.height / 2,
+    { steps: 20 },
+  )
+  await page.mouse.up()
+  await expect(
+    page.getByText('The items have been reordered in the list.'),
+  ).toBeVisible()
+
+  await expect(page.getByRole('listitem')).toHaveText([
+    /New item/,
+    /First item/,
+  ])
+})
