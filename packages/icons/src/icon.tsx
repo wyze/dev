@@ -1,7 +1,6 @@
 import type * as React from 'react'
 
-import spriteHref from '~/assets/sprite.svg'
-
+import spriteHref from './sprite.svg'
 import type { IconName } from './types'
 
 export function Icon({

@@ -1,0 +1,24 @@
+{
+  "name": "@wyze/icons",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/icon.tsx"
+  },
+  "scripts": {
+    "check": "biome check --write .",
+    "dev": "vite --logLevel silent",
+    "typecheck": "tsc -b"
+  },
+  "devDependencies": {
+    "@wyze/typescript-config": "workspace:*",
+    "@wyze/vite-config": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  },
+  "peerDependencies": {
+    "@types/react": "catalog:",
+    "react": "catalog:"
+  }
+}

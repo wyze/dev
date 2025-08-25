@@ -1,10 +1,9 @@
 import { useSortable } from '@dnd-kit/react/sortable'
+import { Icon } from '@wyze/icons'
 import { Button } from '@wyze/ui/button'
 import { cn } from '@wyze/ui/helpers/cn'
 import { Input } from '@wyze/ui/input'
 import { useSubmit } from 'react-router'
-
-import { Icon } from '~/modules/icon'
 
 import type { Route } from '../+types/details'
 

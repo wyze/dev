@@ -6,6 +6,28 @@ import devtoolsJson from 'vite-plugin-devtools-json'
 import { iconsSpritesheet } from 'vite-plugin-icons-spritesheet'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
+export const icons = (): UserConfig => ({
+  build: {
+    rollupOptions: {
+      input: 'src/icon.tsx',
+    },
+  },
+  plugins: [
+    iconsSpritesheet({
+      withTypes: true,
+      inputDir: 'src/icons',
+      outputDir: 'src',
+      typesOutputFile: 'src/types.ts',
+      formatter: 'biome',
+      // This prevents camel casing the name
+      iconNameTransformer: (name) => name,
+    }),
+  ],
+  server: {
+    port: 3715,
+  },
+})
+
 export const react = (): UserConfig => ({
   plugins: [
     cloudflare({
@@ -15,14 +37,5 @@ export const react = (): UserConfig => ({
     reactRouter(),
     tsconfigPaths(),
     devtoolsJson(),
-    iconsSpritesheet({
-      withTypes: true,
-      inputDir: 'app/modules/icon/svgs',
-      outputDir: 'app/assets',
-      typesOutputFile: 'app/modules/icon/types.ts',
-      formatter: 'biome',
-      // This prevents camel casing the name
-      iconNameTransformer: (name) => name,
-    }),
   ],
 })

@@ -2,6 +2,7 @@ import type { Modifiers } from '@dnd-kit/abstract'
 import { RestrictToVerticalAxis } from '@dnd-kit/abstract/modifiers'
 import { move } from '@dnd-kit/helpers'
 import { DragDropProvider } from '@dnd-kit/react'
+import { Icon } from '@wyze/icons'
 import { Button } from '@wyze/ui/button'
 import {
   Card,
@@ -19,7 +20,6 @@ import { createToast } from '~/.server/toast'
 import { combineHeaders } from '~/helpers/combine-headers'
 import { createUuid, type Uuid, UuidSchema } from '~/helpers/create-uuid'
 import { pluralize } from '~/helpers/pluralize'
-import { Icon } from '~/modules/icon'
 
 import type { Route } from './+types/details'
 import { Item } from './components/item'

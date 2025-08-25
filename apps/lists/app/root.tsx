@@ -1,3 +1,4 @@
+import { Icon } from '@wyze/icons'
 import { Button } from '@wyze/ui/button'
 import {
   Card,
@@ -26,7 +27,6 @@ import '@wyze/ui/globals.css'
 import { getToast } from './.server/toast'
 import type { Route } from './+types/root'
 import logo from './assets/logo.png'
-import { Icon } from './modules/icon'
 
 export async function loader(args: Route.LoaderArgs) {
   const { headers, toast } = await getToast(args)

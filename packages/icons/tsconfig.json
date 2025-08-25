@@ -1,0 +1,7 @@
+{
+  "extends": "@wyze/typescript-config/react",
+  "include": ["src/**/*", "vite.config.ts"],
+  "compilerOptions": {
+    "types": ["vite/client"]
+  }
+}
