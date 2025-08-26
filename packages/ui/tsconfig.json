@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "paths": {
       "@wyze/ui/*": ["./src/*"]
-    }
+    },
+    "types": ["vite/client"]
   }
 }
