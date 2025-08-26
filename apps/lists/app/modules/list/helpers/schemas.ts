@@ -7,6 +7,7 @@ export const ListSchema = v.object({
     v.array(
       v.object({
         id: UuidSchema,
+        completed_at: v.optional(v.nullable(v.string()), null),
         label: v.pipe(
           v.string('Must be a string.'),
           v.nonEmpty('Must provide a label for the entry.'),
@@ -20,6 +21,7 @@ export const ListSchema = v.object({
     v.string('Must be a string.'),
     v.nonEmpty('Must provide a name for the list.'),
   ),
+  type: v.optional(v.picklist(['basic', 'todo']), 'basic'),
 })
 
 export const ListsSchema = v.pipe(

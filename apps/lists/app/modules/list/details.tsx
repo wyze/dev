@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from '@wyze/ui/card'
 import { Input } from '@wyze/ui/input'
+import { Tabs, TabsList, TabsTrigger } from '@wyze/ui/tabs'
 import * as React from 'react'
 import { data, useNavigation, useSubmit } from 'react-router'
 import * as v from 'valibot'
@@ -24,6 +25,7 @@ import { pluralize } from '~/helpers/pluralize'
 import type { Route } from './+types/details'
 import { Item } from './components/item'
 import { getListsCookie } from './helpers/get-lists-cookie'
+import { ListSchema } from './helpers/schemas'
 
 type State = {
   add: string
@@ -45,6 +47,10 @@ const FormSchema = v.variant('intent', [
     ),
   }),
   v.object({
+    intent: v.literal('change-list-type'),
+    type: v.nonOptional(ListSchema.entries.type),
+  }),
+  v.object({
     intent: v.literal('delete-item'),
     id: UuidSchema,
   }),
@@ -60,9 +66,27 @@ const FormSchema = v.variant('intent', [
     ),
   }),
   v.object({
-    intent: v.literal('update-item'),
+    intent: v.literal('update-item-completed-at'),
     id: UuidSchema,
-    text: v.pipe(
+    completed_at: v.nullable(
+      v.pipe(
+        v.string('Value must be a string.'),
+        v.nonEmpty('Value must not be empty.'),
+        v.transform((value) => (value === 'null' ? null : value)),
+        v.check((value) => {
+          try {
+            return !value || new Date(value) instanceof Date
+          } catch {
+            return false
+          }
+        }),
+      ),
+    ),
+  }),
+  v.object({
+    intent: v.literal('update-item-label'),
+    id: UuidSchema,
+    label: v.pipe(
       v.string('Item must be a string.'),
       v.nonEmpty('Item must not be empty.'),
     ),
@@ -103,10 +127,22 @@ export async function action(args: Route.ActionArgs) {
               ...list,
               entries: list.entries.concat({
                 id: createUuid(),
+                completed_at: null,
                 label: form.text,
               }),
             },
           ]),
+        ),
+      })
+    case 'change-list-type':
+      return data(null, {
+        headers: combineHeaders(
+          await createToast(args, {
+            description: 'The type of list has been changed.',
+            title: 'List Update Successful',
+            type: 'success',
+          }),
+          await cookie.save([{ ...list, type: form.type }]),
         ),
       })
     case 'delete-item':
@@ -145,8 +181,27 @@ export async function action(args: Route.ActionArgs) {
           ]),
         ),
       })
-
-    case 'update-item':
+    case 'update-item-completed-at':
+      return data(null, {
+        headers: combineHeaders(
+          await createToast(args, {
+            description: 'The list entry completion was updated.',
+            title: 'Update Successful',
+            type: 'success',
+          }),
+          await cookie.save([
+            {
+              ...list,
+              entries: list.entries.map((entry) =>
+                entry.id === form.id
+                  ? { ...entry, completed_at: form.completed_at }
+                  : entry,
+              ),
+            },
+          ]),
+        ),
+      })
+    case 'update-item-label':
       return data(null, {
         headers: combineHeaders(
           await createToast(args, {
@@ -158,7 +213,7 @@ export async function action(args: Route.ActionArgs) {
             {
               ...list,
               entries: list.entries.map((entry) =>
-                entry.id === form.id ? { ...entry, label: form.text } : entry,
+                entry.id === form.id ? { ...entry, label: form.label } : entry,
               ),
             },
           ]),
@@ -224,9 +279,9 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
         payload = { intent: 'add-item', text: state.add }
       } else {
         payload = {
-          intent: 'update-item',
+          intent: 'update-item-label',
           id: state.selected,
-          text: state.text,
+          label: state.text,
         }
       }
 
@@ -283,6 +338,8 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
           .map((id) => entriesHash[id as Uuid]) ?? [])
       : list.entries
 
+  const completed = entries.filter((entry) => entry.completed_at).length
+
   return (
     <>
       <title>{`${list.name} :: Lists`}</title>
@@ -335,9 +392,29 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                   </Button>
                 </div>
               )}
+              <Tabs
+                onValueChange={(type) =>
+                  submit(
+                    { intent: 'change-list-type', type },
+                    { method: 'post' },
+                  )
+                }
+                value={list.type}
+              >
+                <TabsList>
+                  <TabsTrigger className="flex items-center" value="basic">
+                    <Icon name="unordered-list" /> Basic
+                  </TabsTrigger>
+                  <TabsTrigger className="flex items-center" value="todo">
+                    <Icon name="checklist-2" /> Todo
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
             <CardDescription>
-              {pluralize('item', list.entries.length)}
+              {list.type === 'todo'
+                ? `${completed} of ${entries.length} completed`
+                : pluralize('item', entries.length)}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -388,6 +465,7 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                         ? { type: 'selected', text: state.text }
                         : { type: 'default' }
                     }
+                    type={list.type}
                   />
                 ))}
               </div>

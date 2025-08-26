@@ -5,11 +5,14 @@ export const iconNames = [
   'trash',
   'refresh-3',
   'plus',
+  'minus',
   'home',
   'file-error',
   'edit',
   'dot-grid-vertical-2x3',
   'close',
+  'checkmark',
+  'checklist-2',
   'check-2',
 ] as const
 

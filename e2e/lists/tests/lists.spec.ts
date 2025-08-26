@@ -108,3 +108,30 @@ test('able to reorder items in the list', async ({ listsPage, page }) => {
     /First item/,
   ])
 })
+
+test('able to switch list type to todo', async ({ listsPage: _, page }) => {
+  const tab = page.getByRole('tab', { name: 'Todo' })
+
+  await tab.click()
+  await expect(tab).toHaveAttribute('aria-selected', 'true')
+  await expect(
+    page.getByText('The type of list has been changed.'),
+  ).toBeVisible()
+  await expect(page.getByText('0 of 1 completed')).toBeVisible()
+})
+
+test('able to toggle list item completion', async ({ listsPage: _, page }) => {
+  await page.getByRole('tab', { name: 'Todo' }).click()
+
+  const checkbox = page.getByRole('checkbox')
+  await expect(checkbox).toHaveAttribute('aria-checked', 'false')
+  await checkbox.click()
+  await expect(checkbox).toHaveAttribute('aria-checked', 'true')
+  await expect(page.getByText('1 of 1 completed')).toBeVisible()
+  await page.getByRole('tab', { name: 'Basic' }).click()
+  await expect(page.getByText('1 item')).toBeVisible()
+  await page.getByRole('tab', { name: 'Todo' }).click()
+  await checkbox.click()
+  await expect(checkbox).toHaveAttribute('aria-checked', 'false')
+  await expect(page.getByText('0 of 1 completed')).toBeVisible()
+})

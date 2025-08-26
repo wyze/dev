@@ -6,6 +6,7 @@
 ## Features
 
 - 📋 Basic list
+- ☑️ Todo list
 
 ## Getting Started
 

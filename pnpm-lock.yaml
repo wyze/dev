@@ -156,6 +156,9 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.1.11
+      '@wyze/icons':
+        specifier: workspace:*
+        version: link:../icons
       class-variance-authority:
         specifier: ~0.7.1
         version: 0.7.1
