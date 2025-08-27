@@ -24,9 +24,10 @@ import {
 import { toast } from 'sonner'
 import '@wyze/ui/globals.css'
 
-import { getToast } from './.server/toast'
+import { getToast } from '~/.server/toast'
+import logo from '~/assets/logo.png'
+
 import type { Route } from './+types/root'
-import logo from './assets/logo.png'
 
 export async function loader(args: Route.LoaderArgs) {
   const { headers, toast } = await getToast(args)

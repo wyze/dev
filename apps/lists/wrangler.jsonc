@@ -2,7 +2,15 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "lists",
   "compatibility_date": "2025-08-13",
+  "compatibility_flags": ["nodejs_compat"],
   "main": "./workers/app.ts",
   "observability": { "enabled": true },
-  "routes": [{ "pattern": "lists.wyze.dev", "custom_domain": true }]
+  "routes": [{ "pattern": "lists.wyze.dev", "custom_domain": true }],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lists",
+      "database_id": "33d62c89-ccca-44f8-a7db-6721f51038d1"
+    }
+  ]
 }

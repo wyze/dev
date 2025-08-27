@@ -74,7 +74,8 @@ jobs:
         run: pnpm --filter=${{ matrix.app }}-e2e exec playwright install chromium
 
       - name: Import secrets
-        run: echo ${{ secrets[matrix.env_secret] }} > apps/${{ matrix.app }}/build/server/.env
+        run: |
+          echo ${{ secrets[matrix.env_secret] }} | tr ' ' '\n' > apps/${{ matrix.app }}/build/server/.env
 
       - name: Run Playwright tests
         run: pnpm e2e --filter=${{ matrix.app }}-e2e

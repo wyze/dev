@@ -2,13 +2,16 @@ import { Icon } from '@wyze/icons'
 import { Button } from '@wyze/ui/button'
 import { Card, CardContent } from '@wyze/ui/card'
 import { Input } from '@wyze/ui/input'
+import { APIError } from 'better-auth/api'
 import mnemonicWords from 'mnemonic-words'
 import * as React from 'react'
 import { Form, redirect } from 'react-router'
 import * as v from 'valibot'
 
+import { auth } from '~/.server/auth'
 import { redirectWithToast } from '~/.server/toast'
 import { capitalize } from '~/helpers/capitalize'
+import { combineHeaders } from '~/helpers/combine-headers'
 import { createUuid } from '~/helpers/create-uuid'
 import { randomItem } from '~/helpers/random-item'
 import { getListsCookie } from '~/modules/list/helpers/get-lists-cookie'
@@ -27,6 +30,27 @@ function redirectWithErrorToast(
     title,
     type: 'error',
   })
+}
+
+async function trySignIn(request: Request) {
+  try {
+    const session = await auth.api.getSession({ headers: request.headers })
+
+    if (!session) {
+      return await auth.api.signInAnonymous({
+        headers: request.headers,
+        returnHeaders: true,
+      })
+    }
+  } catch (error) {
+    if (error instanceof APIError) {
+      console.error(error.message, error.status)
+    }
+
+    if (error instanceof Error) {
+      console.error(error)
+    }
+  }
 }
 
 export async function action(args: Route.ActionArgs) {
@@ -61,8 +85,14 @@ export async function action(args: Route.ActionArgs) {
     const lists = v.parse(ListsSchema, [
       { entries: [{ id: createUuid(), label: label.output }], id, name },
     ])
+    const [headers, signIn] = await Promise.all([
+      cookie.save(lists),
+      trySignIn(args.request),
+    ])
 
-    return redirect(`lists/${id}`, { headers: await cookie.save(lists) })
+    return redirect(`lists/${id}`, {
+      headers: combineHeaders(headers, signIn?.headers),
+    })
   } catch (error) {
     switch (true) {
       case error instanceof v.ValiError:

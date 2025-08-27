@@ -76,7 +76,23 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: secret bulk .env
-          preCommands: echo ${{ secrets[matrix.env_secret] }} > .env
+          preCommands: echo ${{ secrets[matrix.env_secret] }} | tr ' ' '\n' > .env
+          workingDirectory: apps/${{ matrix.app }}
+
+      - name: Cache database migration
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        id: db-cache
+        with:
+          path: apps/${{ matrix.app }}/db/schema.sql
+          key: ${{ runner.os }}-${{ matrix.app }}-db-${{ hashFiles(format('apps/{0}/db/schema.sql', matrix.app)) }}
+
+      - name: Migrate database
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 execute lists --remote --file=db/schema.sql
           workingDirectory: apps/${{ matrix.app }}
 
       - name: Cache deploy

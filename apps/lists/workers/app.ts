@@ -1,4 +1,7 @@
+import { D1Dialect } from 'kysely-d1'
 import { createRequestHandler } from 'react-router'
+
+import { auth, createAuth } from '~/.server/auth'
 
 declare module 'react-router' {
   export interface AppLoadContext {
@@ -16,6 +19,10 @@ const requestHandler = createRequestHandler(
 
 export default {
   async fetch(request, env, ctx) {
+    if (!auth) {
+      createAuth(new D1Dialect({ database: env.DB }))
+    }
+
     return requestHandler(request, {
       cloudflare: { env, ctx },
     })

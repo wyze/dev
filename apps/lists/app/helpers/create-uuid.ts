@@ -1,4 +1,4 @@
-import { uuid } from '@cfworker/uuid'
+import { v7 as uuidv7 } from 'uuid'
 import * as v from 'valibot'
 
 export const UuidSchema = v.pipe(
@@ -10,5 +10,5 @@ export const UuidSchema = v.pipe(
 export type Uuid = v.InferOutput<typeof UuidSchema>
 
 export function createUuid() {
-  return v.parse(UuidSchema, uuid())
+  return v.parse(UuidSchema, uuidv7())
 }

@@ -6,6 +6,8 @@
   "scripts": {
     "build": "react-router build",
     "check": "biome check --write .",
+    "db:generate": "LOCAL_DB_PATH=$(find .wrangler/state/v3/d1/miniflare-D1DatabaseObject -type f -name '*.sqlite' -print -quit) pnpx @better-auth/cli generate --output=\"db/schema.sql\" --config db/generate.ts --yes",
+    "db:migrate": "wrangler d1 execute lists --file=db/schema.sql",
     "dev": "react-router dev",
     "preview": "vite preview",
     "typecheck": "tsc -b",
@@ -14,27 +16,32 @@
     "typegen:rr": "react-router typegen"
   },
   "dependencies": {
-    "@cfworker/uuid": "^4.0.4",
     "@dnd-kit/abstract": "~0.1.21",
     "@dnd-kit/helpers": "~0.1.21",
     "@dnd-kit/react": "~0.1.21",
     "@wyze/icons": "workspace:*",
     "@wyze/ui": "workspace:*",
+    "better-auth": "^1.3.7",
+    "kysely": "~0.28.5",
+    "kysely-d1": "~0.4.0",
     "isbot": "^5.1.30",
     "mnemonic-words": "^2.0.0",
     "sonner": "catalog:",
     "react": "catalog:",
     "react-dom": "^19.1.1",
     "react-router": "^7.8.2",
+    "uuid": "^11.1.0",
     "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@react-router/dev": "catalog:",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "^19.1.7",
     "@wyze/typescript-config": "workspace:*",
     "@wyze/vite-config": "workspace:*",
+    "better-sqlite3": "^12.2.0",
     "typescript": "catalog:",
     "vite": "catalog:",
     "wrangler": "^4.32.0"
