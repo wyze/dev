@@ -10,7 +10,7 @@
   },
   "scripts": {
     "check": "biome check --write .",
-    "shadcn": "pnpm dlx shadcn@0.0.0-beta.6e471d17",
+    "shadcn": "pnpm dlx shadcn@latest",
     "typecheck": "tsc -b"
   },
   "dependencies": {
