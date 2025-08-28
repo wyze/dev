@@ -209,8 +209,8 @@ importers:
   packages/vite-config:
     devDependencies:
       '@cloudflare/vite-plugin':
-        specifier: ^1.12.0
-        version: 1.12.0(vite@7.1.3(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(yaml@2.8.0))(workerd@1.20250823.0)(wrangler@4.33.0)
+        specifier: ^1.12.1
+        version: 1.12.1(vite@7.1.3(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(yaml@2.8.0))(workerd@1.20250823.0)(wrangler@4.33.0)
       '@react-router/dev':
         specifier: 'catalog:'
         version: 7.8.2(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(react-dom@19.1.1(react@19.1.1))(react-router@7.8.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(vite@7.1.3(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(yaml@2.8.0))(wrangler@4.33.0)(yaml@2.8.0)
@@ -471,11 +471,20 @@ packages:
       workerd:
         optional: true
 
-  '@cloudflare/vite-plugin@1.12.0':
-    resolution: {integrity: sha512-DS6I7p9JazEJnSs7JCfLSQIUNNzruRt5JLbVpLDeagSEEZl2CF9TFMvfTfRdT3EQ2MghSmhNJFGRNoJUGBdCTQ==}
+  '@cloudflare/unenv-preset@2.7.0':
+    resolution: {integrity: sha512-0JbEj+KTCQ4nTIWg2q8Bou+fPxzG6/zwU5O/w6Cld6WEjLl+716foT+2bjg48h09hMtjTKkJdAh1m4LybBKGCg==}
+    peerDependencies:
+      unenv: 2.0.0-rc.19
+      workerd: ^1.20250816.0
+    peerDependenciesMeta:
+      workerd:
+        optional: true
+
+  '@cloudflare/vite-plugin@1.12.1':
+    resolution: {integrity: sha512-KxBMOQRhUEVfHUJZElCWzax0wMihVXXnMTfF40ekQjZ+k7hd0EBBndUwmDoPRE3kSVTVuqSklF1b/Xu26NyzyA==}
     peerDependencies:
       vite: ^6.1.0 || ^7.0.0
-      wrangler: ^4.33.0
+      wrangler: ^4.33.1
 
   '@cloudflare/workerd-darwin-64@1.20250823.0':
     resolution: {integrity: sha512-yRLJc1cQNqQYcDViOk7kpTXnR5XuBP7B/Ms5KBdlQ6eTr2Vsg9mfKqWKInjzY8/Cx+p+Sic2Tbld42gcYkiM2A==}
@@ -1830,6 +1839,11 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
+  miniflare@4.20250823.1:
+    resolution: {integrity: sha512-qjbF69XXyHXk4R//q0a9MLraKE9MLKZ/94k6jKcfouJ0g+se7VyMzCBryeWA534+ZAlNM4Ay5gqYr1v3Wk6ctQ==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   minimatch@10.0.3:
     resolution: {integrity: sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw==}
     engines: {node: 20 || >=22}
@@ -2248,6 +2262,10 @@ packages:
 
   undici@7.13.0:
     resolution: {integrity: sha512-l+zSMssRqrzDcb3fjMkjjLGmuiiK2pMIcV++mJaAc9vhjSGpvM7h43QgP+OAMb1GImHmbPyG2tBXeuyG5iY4gA==}
+    engines: {node: '>=20.18.1'}
+
+  undici@7.15.0:
+    resolution: {integrity: sha512-7oZJCPvvMvTd0OlqWsIxTuItTpJBpU1tcbVl24FMn3xt3+VSunwUasmfPJRE57oNO1KsZ4PgA1xTdAX4hq8NyQ==}
     engines: {node: '>=20.18.1'}
 
   unenv@2.0.0-rc.19:
@@ -2711,12 +2729,18 @@ snapshots:
     optionalDependencies:
       workerd: 1.20250823.0
 
-  '@cloudflare/vite-plugin@1.12.0(vite@7.1.3(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(yaml@2.8.0))(workerd@1.20250823.0)(wrangler@4.33.0)':
+  '@cloudflare/unenv-preset@2.7.0(unenv@2.0.0-rc.19)(workerd@1.20250823.0)':
     dependencies:
-      '@cloudflare/unenv-preset': 2.6.3(unenv@2.0.0-rc.19)(workerd@1.20250823.0)
+      unenv: 2.0.0-rc.19
+    optionalDependencies:
+      workerd: 1.20250823.0
+
+  '@cloudflare/vite-plugin@1.12.1(vite@7.1.3(@types/node@22.18.0)(jiti@2.5.1)(lightningcss@1.30.1)(yaml@2.8.0))(workerd@1.20250823.0)(wrangler@4.33.0)':
+    dependencies:
+      '@cloudflare/unenv-preset': 2.7.0(unenv@2.0.0-rc.19)(workerd@1.20250823.0)
       '@remix-run/node-fetch-server': 0.8.0
       get-port: 7.1.0
-      miniflare: 4.20250823.0
+      miniflare: 4.20250823.1
       picocolors: 1.1.1
       tinyglobby: 0.2.14
       unenv: 2.0.0-rc.19
@@ -3900,6 +3924,24 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+  miniflare@4.20250823.1:
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      acorn: 8.14.0
+      acorn-walk: 8.3.2
+      exit-hook: 2.2.1
+      glob-to-regexp: 0.4.1
+      sharp: 0.33.5
+      stoppable: 1.1.0
+      undici: 7.15.0
+      workerd: 1.20250823.0
+      ws: 8.18.0
+      youch: 4.1.0-beta.10
+      zod: 3.22.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   minimatch@10.0.3:
     dependencies:
       '@isaacs/brace-expansion': 5.0.0
@@ -4319,6 +4361,8 @@ snapshots:
   undici-types@6.21.0: {}
 
   undici@7.13.0: {}
+
+  undici@7.15.0: {}
 
   unenv@2.0.0-rc.19:
     dependencies:
