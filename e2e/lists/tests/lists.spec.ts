@@ -26,6 +26,10 @@ test('shows empty space when no lists present', async ({ listsPage, page }) => {
 
 test('able to edit title of existing list', async ({ listsPage, page }) => {
   await expect(page.getByText(listsPage.title)).toBeVisible()
+  await expect(page.locator('[rel=canonical]')).toHaveAttribute(
+    'href',
+    page.url(),
+  )
 
   await page.getByRole('button', { name: 'Edit title' }).click()
   await page.getByPlaceholder('Enter a title...').fill('My test title')
@@ -34,6 +38,10 @@ test('able to edit title of existing list', async ({ listsPage, page }) => {
     page.getByText('Title of this list has been updated.'),
   ).toBeVisible()
 
+  await expect(page.locator('[rel=canonical]')).toHaveAttribute(
+    'href',
+    page.url(),
+  )
   await expect(page.getByText('My test title')).toBeVisible()
 })
 

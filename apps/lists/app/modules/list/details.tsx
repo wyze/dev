@@ -14,17 +14,16 @@ import {
 import { Input } from '@wyze/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@wyze/ui/tabs'
 import * as React from 'react'
-import { data, useNavigation, useSubmit } from 'react-router'
+import { data, redirect, useNavigation, useSubmit } from 'react-router'
 import * as v from 'valibot'
 
-import { createToast } from '~/.server/toast'
-import { combineHeaders } from '~/helpers/combine-headers'
+import { auth } from '~/.server/auth'
+import { createToast, redirectWithToast } from '~/.server/toast'
 import { createUuid, type Uuid, UuidSchema } from '~/helpers/create-uuid'
 import { pluralize } from '~/helpers/pluralize'
 
 import type { Route } from './+types/details'
 import { Item } from './components/item'
-import { getListsCookie } from './helpers/get-lists-cookie'
 import { ListSchema } from './helpers/schemas'
 
 type State = {
@@ -72,14 +71,7 @@ const FormSchema = v.variant('intent', [
       v.pipe(
         v.string('Value must be a string.'),
         v.nonEmpty('Value must not be empty.'),
-        v.transform((value) => (value === 'null' ? null : value)),
-        v.check((value) => {
-          try {
-            return !value || new Date(value) instanceof Date
-          } catch {
-            return false
-          }
-        }),
+        v.transform((value) => (value === 'null' ? null : new Date(value))),
       ),
     ),
   }),
@@ -101,13 +93,25 @@ const FormSchema = v.variant('intent', [
 ])
 
 export async function action(args: Route.ActionArgs) {
-  const cookie = getListsCookie(args, 'standard')
-  const [formData, lists] = await Promise.all([
+  const {
+    context: {
+      cloudflare: { env },
+    },
+    params,
+    request,
+  } = args
+  const [formData, session] = await Promise.all([
     args.request.formData(),
-    cookie.get(),
+    auth.api.getSession(request),
   ])
   const form = v.parse(FormSchema, Object.fromEntries(formData.entries()))
-  const list = lists.find((list) => list.id === args.params.id)
+
+  if (!session) {
+    throw redirect('/')
+  }
+
+  const lists = env.LISTS.getByName(session.user.id)
+  const list = await lists.fromParams(params)
 
   if (!list) {
     throw data('List not found', { status: 404 })
@@ -115,133 +119,121 @@ export async function action(args: Route.ActionArgs) {
 
   switch (form.intent) {
     case 'add-item':
+      await env.LIST_ITEMS.getByName(list.id).create(list.id, {
+        id: createUuid(),
+        content: form.text,
+      })
+
       return data(null, {
-        headers: combineHeaders(
-          await createToast(args, {
-            description: 'The item has been added to the list.',
-            title: 'Add Item Successful',
-            type: 'success',
-          }),
-          await cookie.save([
-            {
-              ...list,
-              entries: list.entries.concat({
-                id: createUuid(),
-                completed_at: null,
-                label: form.text,
-              }),
-            },
-          ]),
-        ),
+        headers: await createToast(args, {
+          description: 'The item has been added to the list.',
+          title: 'Add Item Successful',
+          type: 'success',
+        }),
       })
     case 'change-list-type':
+      await lists.update({ id: list.id, type: form.type })
+
       return data(null, {
-        headers: combineHeaders(
-          await createToast(args, {
-            description: 'The type of list has been changed.',
-            title: 'List Update Successful',
-            type: 'success',
-          }),
-          await cookie.save([{ ...list, type: form.type }]),
-        ),
+        headers: await createToast(args, {
+          description: 'The type of list has been changed.',
+          title: 'List Update Successful',
+          type: 'success',
+        }),
       })
     case 'delete-item':
+      await env.LIST_ITEMS.getByName(list.id).delete(list.id, form.id)
+
       return data(null, {
-        headers: combineHeaders(
-          await createToast(args, {
-            description: 'The item has been removed from the list.',
-            title: 'Delete Item Successful',
-            type: 'success',
-          }),
-          await cookie.save([
-            {
-              ...list,
-              entries: list.entries.filter((entry) => entry.id !== form.id),
-            },
-          ]),
-        ),
+        headers: await createToast(args, {
+          description: 'The item has been removed from the list.',
+          title: 'Delete Item Successful',
+          type: 'success',
+        }),
       })
     case 'reorder-items':
-      return data(null, {
-        headers: combineHeaders(
-          await createToast(args, {
-            description: 'The items have been reordered in the list.',
-            title: 'Reorder Item Successful',
-            type: 'success',
-          }),
-          await cookie.save([
-            {
-              ...list,
-              entries: form.order
-                .map((id) => list.entries.find((entry) => entry.id === id))
-                .filter((entry): entry is NonNullable<typeof entry> =>
-                  Boolean(entry),
-                ),
-            },
-          ]),
+      await Promise.all(
+        form.order.map((id, index) =>
+          env.LIST_ITEMS.getByName(list.id).update({ id, order: index + 1 }),
         ),
+      )
+
+      return data(null, {
+        headers: await createToast(args, {
+          description: 'The items have been reordered in the list.',
+          title: 'Reorder Item Successful',
+          type: 'success',
+        }),
       })
     case 'update-item-completed-at':
+      await env.LIST_ITEMS.getByName(list.id).update({
+        id: form.id,
+        completed_at: form.completed_at,
+      })
+
       return data(null, {
-        headers: combineHeaders(
-          await createToast(args, {
-            description: 'The list entry completion was updated.',
-            title: 'Update Successful',
-            type: 'success',
-          }),
-          await cookie.save([
-            {
-              ...list,
-              entries: list.entries.map((entry) =>
-                entry.id === form.id
-                  ? { ...entry, completed_at: form.completed_at }
-                  : entry,
-              ),
-            },
-          ]),
-        ),
+        headers: await createToast(args, {
+          description: 'The list entry completion was updated.',
+          title: 'Update Successful',
+          type: 'success',
+        }),
       })
     case 'update-item-label':
-      return data(null, {
-        headers: combineHeaders(
-          await createToast(args, {
-            description: 'The list entry label was updated.',
-            title: 'Update Successful',
-            type: 'success',
-          }),
-          await cookie.save([
-            {
-              ...list,
-              entries: list.entries.map((entry) =>
-                entry.id === form.id ? { ...entry, label: form.label } : entry,
-              ),
-            },
-          ]),
-        ),
+      await env.LIST_ITEMS.getByName(list.id).update({
+        id: form.id,
+        content: form.label,
       })
-    case 'update-title':
+
       return data(null, {
-        headers: combineHeaders(
-          await createToast(args, {
-            description: 'Title of this list has been updated.',
-            title: 'Update Successful',
-            type: 'success',
-          }),
-          await cookie.save([{ ...list, name: form.text }]),
-        ),
+        headers: await createToast(args, {
+          description: 'The list entry label was updated.',
+          title: 'Update Successful',
+          type: 'success',
+        }),
       })
+    case 'update-title': {
+      const updated = await lists.update({ id: list.id, name: form.text })
+
+      if (!updated) {
+        return data(null, {
+          headers: await createToast(args, {
+            description: 'Unable to update the title of the list.',
+            title: 'Update failed',
+            type: 'error',
+          }),
+        })
+      }
+
+      return redirectWithToast(args, `/lists/${list.shortId}/${updated.slug}`, {
+        description: 'Title of this list has been updated.',
+        title: 'Update Successful',
+        type: 'success',
+      })
+    }
   }
 }
 
-export async function loader(args: Route.LoaderArgs) {
-  const lists = await getListsCookie(args, 'standard').get()
-  const list = lists.find((list) => list.id === args.params.id)
+export async function loader({ context, params, request }: Route.LoaderArgs) {
+  const session = await auth.api.getSession(request)
+
+  if (!session) {
+    throw redirect('/')
+  }
+
+  const list = await context.cloudflare.env.LISTS.getByName(
+    session.user.id,
+  ).fromParams(params)
 
   if (!list) {
     throw data('List not found', { status: 404 })
   }
 
-  return { list }
+  const url = `${new URL(request.url).origin}/lists/${list.shortId}/${list.slug}`
+  const entries = await context.cloudflare.env.LIST_ITEMS.getByName(
+    list.id,
+  ).get()
+
+  return { entries, list, url }
 }
 
 const initialState = {
@@ -264,7 +256,7 @@ function reducer(state: State, action: Action): State {
 }
 
 export default function ListDetails({ loaderData }: Route.ComponentProps) {
-  const { list } = loaderData
+  const { list, url } = loaderData
   const [state, dispatch] = React.useReducer(reducer, initialState)
   const navigation = useNavigation()
   const submit = useSubmit()
@@ -321,8 +313,8 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
     [keydown, save],
   )
 
-  const entriesHash = list.entries.reduce<
-    Record<Uuid, (typeof list.entries)[number]>
+  const entriesHash = loaderData.entries.reduce<
+    Record<Uuid, (typeof loaderData.entries)[number]>
   >((acc, entry) => {
     acc[entry.id] = entry
 
@@ -336,13 +328,14 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
           ?.toString()
           .split(',')
           .map((id) => entriesHash[id as Uuid]) ?? [])
-      : list.entries
+      : loaderData.entries
 
   const completed = entries.filter((entry) => entry.completed_at).length
 
   return (
     <>
       <title>{`${list.name} :: Lists`}</title>
+      <link rel="canonical" href={url} />
       <div className="mx-auto max-w-2xl p-12">
         <Card>
           <CardHeader className="border-b">

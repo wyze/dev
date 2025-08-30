@@ -68,6 +68,12 @@ importers:
       kysely-d1:
         specifier: ~0.4.0
         version: 0.4.0(kysely@0.28.5)
+      kysely-durable-object-sqlite:
+        specifier: ~0.0.0
+        version: 0.0.0(kysely@0.28.5)
+      kysely-plugin-serialize:
+        specifier: ~0.8.2
+        version: 0.8.2(kysely@0.28.5)
       mnemonic-words:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1727,6 +1733,16 @@ packages:
     resolution: {integrity: sha512-wUcVvQNtm30OTfuo7Ad5vYJ1qHqPXOCZc+zWchVKNyuvqY3u8OuGw4gmUx1Ypdx2wRVFLHVQC9I7v0pTmF7Nkw==}
     peerDependencies:
       kysely: '*'
+
+  kysely-durable-object-sqlite@0.0.0:
+    resolution: {integrity: sha512-P3BYvfO6mTO8gVJZzAo7a7lyYLmk1yCrKUqrZUQeZGc+LoeoZkeCejnLC9km9kSQFcgqhGWEuCxD2irLbdXNAA==}
+    peerDependencies:
+      kysely: ~0.27.4
+
+  kysely-plugin-serialize@0.8.2:
+    resolution: {integrity: sha512-81nyTvDPGNHTzs9/Si+GW69YkcQgy2PMlkCieihEyF9EmlGY/TURUZMhVRrLV1k3Hsit+AWCfoEOLJczbK3hDw==}
+    peerDependencies:
+      kysely: '>=0.26'
 
   kysely@0.28.5:
     resolution: {integrity: sha512-rlB0I/c6FBDWPcQoDtkxi9zIvpmnV5xoIalfCMSMCa7nuA6VGA3F54TW9mEgX4DVf10sXAWCF5fDbamI/5ZpKA==}
@@ -3812,6 +3828,14 @@ snapshots:
   kleur@4.1.5: {}
 
   kysely-d1@0.4.0(kysely@0.28.5):
+    dependencies:
+      kysely: 0.28.5
+
+  kysely-durable-object-sqlite@0.0.0(kysely@0.28.5):
+    dependencies:
+      kysely: 0.28.5
+
+  kysely-plugin-serialize@0.8.2(kysely@0.28.5):
     dependencies:
       kysely: 0.28.5
 

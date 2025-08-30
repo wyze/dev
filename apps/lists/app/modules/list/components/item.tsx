@@ -16,7 +16,7 @@ type Actions = {
   type: (text: string) => void
 }
 type List = Route.ComponentProps['loaderData']['list']
-type Entry = List['entries'][number]
+type Entry = Route.ComponentProps['loaderData']['entries'][number]
 type State = { type: 'default' } | { type: 'selected'; text: string }
 
 export function Item({
@@ -97,12 +97,12 @@ export function Item({
                   type === 'todo' && Boolean(entry.completed_at),
               })}
             >
-              {entry.label}
+              {entry.content}
             </span>
             <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
               <Button
                 className="border border-transparent hover:border-accent-foreground/50"
-                onClick={() => actions.select(entry.id, entry.label)}
+                onClick={() => actions.select(entry.id, entry.content)}
                 onPointerDown={(event) => event.stopPropagation()}
                 size="icon-sm"
                 variant="ghost"

@@ -1,16 +1,22 @@
-import { Link } from 'react-router'
+import { Link, redirect } from 'react-router'
 
+import { auth } from '~/.server/auth'
 import { pluralize } from '~/helpers/pluralize'
 
 import type { Route } from './+types'
-import { getListsCookie } from './helpers/get-lists-cookie'
 
-export async function loader(args: Route.LoaderArgs) {
-  const lists = await getListsCookie(args, 'standard').get()
+export async function loader({ context, request }: Route.LoaderArgs) {
+  const session = await auth.api.getSession(request)
 
-  return {
-    lists: lists.map((list) => ({ ...list, entries: list.entries.length })),
+  if (!session) {
+    throw redirect('/')
   }
+
+  const lists = await context.cloudflare.env.LISTS.getByName(
+    session.user.id,
+  ).get()
+
+  return { lists }
 }
 
 export default function ListIndex({ loaderData }: Route.ComponentProps) {

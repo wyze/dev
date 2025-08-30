@@ -73,6 +73,14 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter=${{ matrix.app }}-e2e exec playwright install chromium
 
+      - name: Migrate database
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 execute lists --local --file=db/schema.sql
+          workingDirectory: apps/${{ matrix.app }}
+
       - name: Import secrets
         run: |
           echo ${{ secrets[matrix.env_secret] }} | tr ' ' '\n' > apps/${{ matrix.app }}/build/server/.env

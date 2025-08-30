@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 
 export class ListsPage {
   public title = ''
@@ -12,7 +12,7 @@ export class ListsPage {
       .fill('First item.')
 
     await this.page.getByRole('button', { name: 'Add Item' }).click()
-    await this.page.waitForURL('/lists/*')
+    await this.page.waitForURL('/lists/*/*')
 
     const slot = this.page.locator('[data-slot=card-title]')
 

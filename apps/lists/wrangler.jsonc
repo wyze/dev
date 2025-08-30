@@ -12,5 +12,15 @@
       "database_name": "lists",
       "database_id": "33d62c89-ccca-44f8-a7db-6721f51038d1"
     }
+  ],
+  "durable_objects": {
+    "bindings": [
+      { "name": "LISTS", "class_name": "List" },
+      { "name": "LIST_ITEMS", "class_name": "ListItem" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["List"] },
+    { "tag": "v2", "new_sqlite_classes": ["ListItem"] }
   ]
 }

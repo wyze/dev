@@ -10,6 +10,6 @@ export default [
   route('api/auth/*', 'modules/auth/route.ts'),
   ...prefix('lists', [
     index('modules/list/index.tsx'),
-    route(':id', 'modules/list/details.tsx'),
+    route(':id/*', 'modules/list/details.tsx'),
   ]),
 ] satisfies RouteConfig

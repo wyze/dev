@@ -11,11 +11,8 @@ import * as v from 'valibot'
 import { auth } from '~/.server/auth'
 import { redirectWithToast } from '~/.server/toast'
 import { capitalize } from '~/helpers/capitalize'
-import { combineHeaders } from '~/helpers/combine-headers'
-import { createUuid } from '~/helpers/create-uuid'
+import { createUuid, type Uuid } from '~/helpers/create-uuid'
 import { randomItem } from '~/helpers/random-item'
-import { getListsCookie } from '~/modules/list/helpers/get-lists-cookie'
-import { ListsSchema } from '~/modules/list/helpers/schemas'
 import type { ServerArgs } from '~/types'
 
 import type { Route } from './+types/route'
@@ -54,9 +51,9 @@ async function trySignIn(request: Request) {
 }
 
 export async function action(args: Route.ActionArgs) {
-  const cookie = getListsCookie(args, 'nullable')
-  const formData = await args.request.formData()
+  const { context, request } = args
 
+  const formData = await request.formData()
   const label = v.safeParse(
     v.pipe(
       v.string('Must be a string.'),
@@ -80,18 +77,47 @@ export async function action(args: Route.ActionArgs) {
       .join(' '),
   )
 
-  try {
-    const id = createUuid()
-    const lists = v.parse(ListsSchema, [
-      { entries: [{ id: createUuid(), label: label.output }], id, name },
-    ])
-    const [headers, signIn] = await Promise.all([
-      cookie.save(lists),
-      trySignIn(args.request),
-    ])
+  const signIn = await trySignIn(request)
 
-    return redirect(`lists/${id}`, {
-      headers: combineHeaders(headers, signIn?.headers),
+  if (!signIn?.response) {
+    return redirectWithErrorToast(
+      args,
+      'Auth error',
+      'Unable to create and sign in user',
+    )
+  }
+
+  try {
+    const { user } = signIn.response
+    const lists = context.cloudflare.env.LISTS.getByName(user.id)
+    const list = await lists.create({ id: createUuid(), name, type: 'basic' })
+
+    if (!list) {
+      return redirectWithErrorToast(
+        args,
+        'List error',
+        'Unable to create a list',
+      )
+    }
+
+    const listItems = context.cloudflare.env.LIST_ITEMS.getByName(list.id)
+    await listItems.create(list.id, { id: createUuid(), content: label.output })
+
+    const now = new Date()
+    await context.db
+      .insertInto('list_metadata')
+      .values({
+        created_at: now,
+        items: 1,
+        list_id: list.id,
+        type: 'basic',
+        updated_at: now,
+        user_id: user.id as Uuid,
+      })
+      .execute()
+
+    return redirect(`lists/${list.shortId}/${list.slug}`, {
+      headers: signIn.headers,
     })
   } catch (error) {
     switch (true) {
@@ -107,12 +133,6 @@ export async function action(args: Route.ActionArgs) {
         return redirectWithErrorToast(args, 'Unknown exception', `${error}`)
     }
   }
-}
-
-export async function loader(args: Route.LoaderArgs) {
-  const lists = await getListsCookie(args, 'nullable').get()
-
-  return { lists }
 }
 
 export default function Home() {

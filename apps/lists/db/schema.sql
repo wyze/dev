@@ -5,3 +5,5 @@ create table if not exists "session" ("id" text not null primary key, "expires_a
 create table if not exists "account" ("id" text not null primary key, "account_id" text not null, "provider_id" text not null, "user_id" text not null references "user" ("id") on delete cascade, "access_token" text, "refresh_token" text, "id_token" text, "access_token_expires_at" date, "scope" text, "password" text, "created_at" date not null, "updated_at" date not null);
 
 create table if not exists "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expires_at" date not null, "created_at" date, "updated_at" date);
+
+create table if not exists "list_metadata" ("list_id" text not null primary key, "user_id" text not null, "items" integer not null, "type" text not null, "created_at" date not null, "updated_at" date not null);
