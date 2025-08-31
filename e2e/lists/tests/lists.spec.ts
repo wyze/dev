@@ -17,17 +17,24 @@ test('has title', async ({ page }) => {
   await expect(page).toHaveTitle('Lists')
 })
 
+test('has acceptable use page', async ({ page }) => {
+  await page.goto('/')
+  await page.getByText('Acceptable Use').click()
+  await expect(page).toHaveTitle('Acceptable Use · Lists')
+  await expect(page.getByText('Last updated: 2025-08-31')).toBeVisible()
+})
+
+test('has privacy policy page', async ({ page }) => {
+  await page.goto('/')
+  await page.getByText('Privacy Policy').click()
+  await expect(page).toHaveTitle('Privacy Policy · Lists')
+  await expect(page.getByText('Effective Date: 2025-08-31')).toBeVisible()
+})
+
 test('has terms of service page', async ({ page }) => {
   await page.goto('/')
   await page.getByText('Terms of Service').click()
   await expect(page).toHaveTitle('Terms of Service · Lists')
-  await expect(page.getByText('Effective Date: 2025-08-31')).toBeVisible()
-})
-
-test('has privacy-policy page', async ({ page }) => {
-  await page.goto('/')
-  await page.getByText('Privacy Policy').click()
-  await expect(page).toHaveTitle('Privacy Policy · Lists')
   await expect(page.getByText('Effective Date: 2025-08-31')).toBeVisible()
 })
 

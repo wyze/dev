@@ -69,8 +69,8 @@ export default function PrivacyPolicyRoute() {
         <p>
           Depending on your location, you may have rights to access, update, or
           delete your data. Contact us at{' '}
-          <a className="underline" href="mailto:me@wyze.dev">
-            me@wyze.dev
+          <a className="underline" href="mailto:support@wyze.dev">
+            support@wyze.dev
           </a>{' '}
           to exercise these rights.
         </p>
@@ -79,8 +79,8 @@ export default function PrivacyPolicyRoute() {
           <p>Last updated: {date}</p>
           <p>
             Contact us at{' '}
-            <a className="underline" href="mailto:me@wyze.dev">
-              me@wyze.dev
+            <a className="underline" href="mailto:support@wyze.dev">
+              support@wyze.dev
             </a>
           </p>
         </footer>

@@ -57,8 +57,8 @@ export default function TermsOfServiceRoute() {
           <p>Last updated: {date}</p>
           <p>
             Contact us at{' '}
-            <a className="underline" href="mailto:me@wyze.dev">
-              me@wyze.dev
+            <a className="underline" href="mailto:support@wyze.dev">
+              support@wyze.dev
             </a>
           </p>
         </footer>
