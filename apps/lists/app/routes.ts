@@ -13,6 +13,7 @@ export default [
     route(':id/*', 'modules/list/details.tsx'),
   ]),
   ...prefix('legal', [
+    route('privacy-policy', 'modules/legal/privacy-policy.tsx'),
     route('terms-of-service', 'modules/legal/terms-of-service.tsx'),
   ]),
 ] satisfies RouteConfig

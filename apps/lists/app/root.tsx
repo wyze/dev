@@ -93,6 +93,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <main className="min-h-[calc(100vh-7.6rem)]">{children}</main>
           <footer className="flex items-center justify-center gap-6 px-6 py-4 font-medium text-gray-700 text-sm opacity-50 transition-opacity hover:opacity-100">
             <Link to="/legal/terms-of-service">Terms of Service</Link>
+            <Link to="/legal/privacy-policy">Privacy Policy</Link>
           </footer>
           <Toaster richColors />
         </div>

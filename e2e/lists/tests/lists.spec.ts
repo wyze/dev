@@ -18,9 +18,16 @@ test('has title', async ({ page }) => {
 })
 
 test('has terms of service page', async ({ page }) => {
-  await page.goto('/legal/terms-of-service')
-
+  await page.goto('/')
+  await page.getByText('Terms of Service').click()
   await expect(page).toHaveTitle('Terms of Service · Lists')
+  await expect(page.getByText('Effective Date: 2025-08-31')).toBeVisible()
+})
+
+test('has privacy-policy page', async ({ page }) => {
+  await page.goto('/')
+  await page.getByText('Privacy Policy').click()
+  await expect(page).toHaveTitle('Privacy Policy · Lists')
   await expect(page.getByText('Effective Date: 2025-08-31')).toBeVisible()
 })
 
