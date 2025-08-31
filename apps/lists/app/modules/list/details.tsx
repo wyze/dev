@@ -334,7 +334,7 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <title>{`${list.name} :: Lists`}</title>
+      <title>{`${list.name} · Lists`}</title>
       <link rel="canonical" href={url} />
       <div className="mx-auto max-w-2xl p-12">
         <Card>

@@ -80,15 +80,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="root">
         <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
-          <header className="border-gray-200 border-b bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+          <header className="sticky top-0 border-gray-200 border-b bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
             <div className="mx-auto max-w-4xl">
-              <h1 className="flex items-center gap-1 font-bold text-2xl text-gray-900 dark:text-gray-50">
-                <img alt="Lists" className="size-6" src={logo} />
-                Lists
-              </h1>
+              <Link to="/">
+                <h1 className="flex items-center gap-1 font-bold text-2xl text-gray-900 dark:text-gray-50">
+                  <img alt="Lists" className="size-6" src={logo} />
+                  Lists
+                </h1>
+              </Link>
             </div>
           </header>
-          <main className="h-[calc(100vh-4rem)]">{children}</main>
+          <main className="min-h-[calc(100vh-7.6rem)]">{children}</main>
+          <footer className="flex items-center justify-center gap-6 px-6 py-4 font-medium text-gray-700 text-sm opacity-50 transition-opacity hover:opacity-100">
+            <Link to="/legal/terms-of-service">Terms of Service</Link>
+          </footer>
           <Toaster richColors />
         </div>
         <ScrollRestoration />

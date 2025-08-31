@@ -17,8 +17,15 @@ test('has title', async ({ page }) => {
   await expect(page).toHaveTitle('Lists')
 })
 
+test('has terms of service page', async ({ page }) => {
+  await page.goto('/legal/terms-of-service')
+
+  await expect(page).toHaveTitle('Terms of Service · Lists')
+  await expect(page.getByText('Effective Date: 2025-08-31')).toBeVisible()
+})
+
 test('shows empty space when no lists present', async ({ listsPage, page }) => {
-  await expect(page).toHaveTitle(`${listsPage.title} :: Lists`)
+  await expect(page).toHaveTitle(`${listsPage.title} · Lists`)
   await expect(page.getByText(listsPage.title)).toBeVisible()
   await expect(page.getByText('1 item')).toBeVisible()
   await expect(page.getByText('First item.')).toBeVisible()

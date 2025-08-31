@@ -12,4 +12,7 @@ export default [
     index('modules/list/index.tsx'),
     route(':id/*', 'modules/list/details.tsx'),
   ]),
+  ...prefix('legal', [
+    route('terms-of-service', 'modules/legal/terms-of-service.tsx'),
+  ]),
 ] satisfies RouteConfig

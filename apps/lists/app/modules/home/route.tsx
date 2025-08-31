@@ -34,11 +34,15 @@ async function trySignIn(request: Request) {
     const session = await auth.api.getSession({ headers: request.headers })
 
     if (!session) {
-      return await auth.api.signInAnonymous({
+      const { headers, response } = await auth.api.signInAnonymous({
         headers: request.headers,
         returnHeaders: true,
       })
+
+      return { headers, user: response?.user }
     }
+
+    return { user: session.user }
   } catch (error) {
     if (error instanceof APIError) {
       console.error(error.message, error.status)
@@ -79,7 +83,7 @@ export async function action(args: Route.ActionArgs) {
 
   const signIn = await trySignIn(request)
 
-  if (!signIn?.response) {
+  if (!signIn?.user) {
     return redirectWithErrorToast(
       args,
       'Auth error',
@@ -88,7 +92,7 @@ export async function action(args: Route.ActionArgs) {
   }
 
   try {
-    const { user } = signIn.response
+    const { user } = signIn
     const lists = context.cloudflare.env.LISTS.getByName(user.id)
     const list = await lists.create({ id: createUuid(), name, type: 'basic' })
 
