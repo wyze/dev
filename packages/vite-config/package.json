@@ -11,7 +11,7 @@
     "typecheck": "tsc -b"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.12.0",
+    "@cloudflare/vite-plugin": "^1.12.2",
     "@react-router/dev": "catalog:",
     "@tailwindcss/vite": "^4.1.12",
     "@types/node": "catalog:",
