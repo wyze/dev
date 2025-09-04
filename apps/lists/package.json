@@ -46,6 +46,6 @@
     "better-sqlite3": "^12.2.0",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "wrangler": "^4.33.0"
+    "wrangler": "^4.34.0"
   }
 }
