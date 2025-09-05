@@ -21,14 +21,14 @@ function Input({
       className={cn('relative w-full', inputContainerClassName)}
       data-slot="input-container"
     >
-      {leadingIcon && (
+      {leadingIcon ? (
         <span
           data-slot="input-leading-icon"
           className="-translate-y-1/2 absolute top-1/2 left-3 shrink-0 text-muted-foreground [&_svg:not([class*='pointer-events-'])]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0"
         >
           {leadingIcon}
         </span>
-      )}
+      ) : null}
       <input
         type={type}
         data-slot="input"
@@ -37,20 +37,20 @@ function Input({
           'file:inline-flex file:h-7 file:border-0 file:bg-transparent file:font-medium file:text-foreground file:text-sm',
           'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
           'aria-invalid:border-destructive aria-invalid:ring-destructive/50',
-          leadingIcon && 'pl-10',
-          trailingIcon && 'pr-10',
+          leadingIcon ? 'pl-10' : null,
+          trailingIcon ? 'pr-10' : null,
           className,
         )}
         {...props}
       />
-      {trailingIcon && (
+      {trailingIcon ? (
         <span
           data-slot="input-trailing-icon"
           className="-translate-y-1/2 absolute top-1/2 right-3 shrink-0 text-muted-foreground [&_svg:not([class*='pointer-events-'])]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0"
         >
           {trailingIcon}
         </span>
-      )}
+      ) : null}
     </div>
   )
 }

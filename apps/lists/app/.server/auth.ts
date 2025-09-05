@@ -2,6 +2,7 @@ import { type BetterAuthOptions, betterAuth } from 'better-auth'
 import { anonymous } from 'better-auth/plugins'
 import type { Dialect } from 'kysely'
 import { Kysely } from 'kysely'
+import { defaultDeserializer, SerializePlugin } from 'kysely-plugin-serialize'
 import { v7 as uuidv7 } from 'uuid'
 
 const config = {
@@ -29,13 +30,18 @@ const config = {
     user: {
       create: {
         async before(user) {
-          // This will work while we are using the anonymous plugin.
-          const username = user.email.slice(5, -5)
+          const username = user.email.endsWith('@null')
+            ? user.email.slice(5, -5)
+            : user.email.split('@').at(0)
 
           return { data: { ...user, username } }
         },
       },
     },
+  },
+  emailAndPassword: {
+    enabled: true,
+    revokeSessionsOnPasswordReset: true,
   },
   plugins: [
     anonymous({
@@ -84,9 +90,30 @@ export let auth: ReturnType<typeof betterAuth<typeof config>>
 export function createAuth(dialect: Dialect): typeof auth {
   if (!auth) {
     auth = betterAuth({
-      database: { db: new Kysely({ dialect }), type: 'sqlite' },
+      database: {
+        db: new Kysely({
+          dialect,
+          plugins: [
+            new SerializePlugin({
+              deserializer(param) {
+                const value = defaultDeserializer(param)
+
+                switch (true) {
+                  case value instanceof Date:
+                    return value
+                  case typeof value === 'object' && Boolean(value):
+                    return JSON.stringify(value)
+                  default:
+                    return value
+                }
+              },
+            }),
+          ],
+        }),
+        type: 'sqlite',
+      },
       ...config,
-    })
+    } satisfies BetterAuthOptions)
   }
 
   return auth

@@ -149,7 +149,7 @@ export default function Home() {
         name="description"
         content="An application to make various kinds of lists."
       />
-      <div className="flex items-center justify-center p-4 pt-16">
+      <div className="flex items-center justify-center p-4 pt-12">
         <Card className="w-full max-w-md">
           <CardContent className="space-y-6 p-8 text-center">
             <div>

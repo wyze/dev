@@ -2,6 +2,10 @@ import type { AppLoadContext } from 'react-router'
 import * as v from 'valibot'
 
 const EnvSchema = v.object({
+  BETTER_AUTH_SECRET: v.pipe(
+    v.string('Must be a string.'),
+    v.nonEmpty('Must not be empty.'),
+  ),
   COOKIE_SECRET: v.pipe(
     v.string('Must be a string.'),
     v.transform((value) => value.split(',')),

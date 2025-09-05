@@ -11,28 +11,58 @@ import { Toaster } from '@wyze/ui/sonner'
 import * as React from 'react'
 import {
   data,
+  Form,
   isRouteErrorResponse,
   Link,
   Links,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
   useLoaderData,
   useLocation,
 } from 'react-router'
 import { toast } from 'sonner'
+import * as v from 'valibot'
 import '@wyze/ui/globals.css'
 
+import { auth } from '~/.server/auth'
 import { getToast } from '~/.server/toast'
 import logo from '~/assets/logo.png'
+import { usePathSegment } from '~/hooks/use-path-segment'
 
 import type { Route } from './+types/root'
 
-export async function loader(args: Route.LoaderArgs) {
-  const { headers, toast } = await getToast(args)
+const FormSchema = v.object({
+  intent: v.literal('logout'),
+})
 
-  return data({ toast }, { headers })
+export async function action({ request }: Route.ActionArgs) {
+  const form = v.parse(
+    FormSchema,
+    Object.fromEntries((await request.formData()).entries()),
+  )
+
+  switch (form.intent) {
+    case 'logout': {
+      const { headers } = await auth.api.signOut({
+        headers: request.headers,
+        returnHeaders: true,
+      })
+
+      return redirect('/sign-in', { headers })
+    }
+  }
+}
+
+export async function loader(args: Route.LoaderArgs) {
+  const [{ headers, toast }, session] = await Promise.all([
+    getToast(args),
+    auth.api.getSession({ headers: args.request.headers }),
+  ])
+
+  return data({ toast, user: session?.user ?? null }, { headers })
 }
 
 function useToast() {
@@ -57,6 +87,10 @@ function useToast() {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { user } = useLoaderData<typeof loader>()
+  const segment = usePathSegment(0)
+  const isAuthRoute = segment?.startsWith('sign-') ?? false
+
   useToast()
 
   return (
@@ -80,22 +114,55 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="root">
         <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-900">
-          <header className="sticky top-0 border-gray-200 border-b bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
-            <div className="mx-auto max-w-4xl">
-              <Link to="/">
-                <h1 className="flex items-center gap-1 font-bold text-2xl text-gray-900 dark:text-gray-50">
-                  <img alt="Lists" className="size-6" src={logo} />
-                  Lists
-                </h1>
-              </Link>
-            </div>
-          </header>
-          <main className="min-h-[calc(100vh-7.6rem)]">{children}</main>
-          <footer className="flex items-center justify-center gap-6 px-6 py-4 font-medium text-gray-700 text-sm opacity-50 transition-opacity hover:opacity-100">
-            <Link to="/legal/acceptable-use">Acceptable Use</Link>
-            <Link to="/legal/privacy-policy">Privacy Policy</Link>
-            <Link to="/legal/terms-of-service">Terms of Service</Link>
-          </footer>
+          {isAuthRoute ? null : (
+            <header className="sticky top-0 border-gray-200 border-b bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+              <div className="mx-auto flex max-w-4xl items-center justify-between">
+                <Link to="/">
+                  <h1 className="flex items-center gap-1 font-bold text-2xl text-gray-900 dark:text-gray-50">
+                    <img alt="Lists" className="size-6" src={logo} />
+                    Lists
+                  </h1>
+                </Link>
+                {user ? (
+                  <Form method="post">
+                    <Button
+                      name="intent"
+                      size="sm"
+                      value="logout"
+                      variant="outline"
+                      type="submit"
+                    >
+                      Logout
+                    </Button>
+                  </Form>
+                ) : (
+                  <Button
+                    render={<Link to="/sign-in" />}
+                    size="sm"
+                    variant="outline"
+                  >
+                    Sign in
+                  </Button>
+                )}
+              </div>
+            </header>
+          )}
+          <main
+            className={
+              isAuthRoute
+                ? 'mx-auto flex min-h-screen items-center'
+                : 'min-h-[calc(100vh-7.6rem)]'
+            }
+          >
+            {children}
+          </main>
+          {isAuthRoute ? null : (
+            <footer className="flex items-center justify-center gap-6 px-6 py-4 font-medium text-gray-700 text-sm opacity-50 transition-opacity hover:opacity-100">
+              <Link to="/legal/acceptable-use">Acceptable Use</Link>
+              <Link to="/legal/privacy-policy">Privacy Policy</Link>
+              <Link to="/legal/terms-of-service">Terms of Service</Link>
+            </footer>
+          )}
           <Toaster richColors />
         </div>
         <ScrollRestoration />

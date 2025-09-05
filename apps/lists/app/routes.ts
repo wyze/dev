@@ -1,5 +1,6 @@
 import {
   index,
+  layout,
   prefix,
   type RouteConfig,
   route,
@@ -7,7 +8,11 @@ import {
 
 export default [
   index('modules/home/route.tsx'),
-  route('api/auth/*', 'modules/auth/route.ts'),
+  route('api/auth/*', 'modules/auth/api.ts'),
+  layout('modules/auth/route.tsx', [
+    route('sign-in', 'modules/auth/sign-in.tsx'),
+    route('sign-up', 'modules/auth/sign-up.tsx'),
+  ]),
   ...prefix('lists', [
     index('modules/list/index.tsx'),
     route(':id/*', 'modules/list/details.tsx'),
