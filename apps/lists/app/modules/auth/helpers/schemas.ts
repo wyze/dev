@@ -31,6 +31,6 @@ export const FormSchema = v.variant('intent', [
   }),
   v.object({
     intent: v.literal('social'),
-    provider: v.picklist(['github']),
+    provider: v.picklist(['github', 'google']),
   }),
 ])

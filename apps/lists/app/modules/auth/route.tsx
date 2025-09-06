@@ -40,7 +40,7 @@ export async function loader({
     case null:
       return { ok: true, value: null }
     case 'signup_disabled':
-      return { ok: false, value: 'Sign up is disabled on sign in page.' }
+      return { ok: false, value: 'Sign up is disabled on the sign in page.' }
     default:
       return { ok: false, value: error }
   }
@@ -89,28 +89,47 @@ export default function AuthRoute({ loaderData }: Route.ComponentProps) {
                 {isSignin ? 'Welcome back' : 'Create account'}
               </CardTitle>
               <CardDescription>
-                {action} with your GitHub account
+                {action} with your GitHub or Google account
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
-                <Form
-                  action={segment}
-                  className="flex flex-col gap-4"
-                  method="post"
-                >
-                  <Button
-                    className="w-full"
-                    name="intent"
-                    type="submit"
-                    value="social"
-                    variant="outline"
+                <div className="grid gap-3">
+                  <Form
+                    action={segment}
+                    className="flex flex-col gap-4"
+                    method="post"
                   >
-                    <input type="hidden" name="provider" value="github" />
-                    <Icon name="github" />
-                    {action} with GitHub
-                  </Button>
-                </Form>
+                    <Button
+                      className="w-full"
+                      name="intent"
+                      type="submit"
+                      value="social"
+                      variant="outline"
+                    >
+                      <input type="hidden" name="provider" value="github" />
+                      <Icon name="github" />
+                      {action} with GitHub
+                    </Button>
+                  </Form>
+                  <Form
+                    action={segment}
+                    className="flex flex-col gap-4"
+                    method="post"
+                  >
+                    <Button
+                      className="w-full"
+                      name="intent"
+                      type="submit"
+                      value="social"
+                      variant="outline"
+                    >
+                      <input type="hidden" name="provider" value="google" />
+                      <Icon name="google" />
+                      {action} with Google
+                    </Button>
+                  </Form>
+                </div>
                 <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-border after:border-t">
                   <span className="relative z-10 bg-card px-2 text-muted-foreground">
                     Or continue with

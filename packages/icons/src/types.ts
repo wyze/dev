@@ -7,6 +7,7 @@ export const iconNames = [
   'plus',
   'minus',
   'home',
+  'google',
   'github',
   'file-error',
   'eye',

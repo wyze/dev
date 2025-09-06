@@ -9,7 +9,7 @@ const config = {
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ['github'],
+      trustedProviders: ['github', 'google'],
       updateUserInfoOnLink: true,
     },
     fields: {
@@ -124,6 +124,13 @@ export function createAuth(
         github: {
           clientId: env.GITHUB_CLIENT_ID,
           clientSecret: env.GITHUB_CLIENT_SECRET,
+          disableImplicitSignUp: true,
+          enabled: true,
+          overrideUserInfoOnSignIn: true,
+        },
+        google: {
+          clientId: env.GOOGLE_CLIENT_ID,
+          clientSecret: env.GOOGLE_CLIENT_SECRET,
           disableImplicitSignUp: true,
           enabled: true,
           overrideUserInfoOnSignIn: true,

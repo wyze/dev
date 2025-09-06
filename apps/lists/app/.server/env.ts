@@ -24,6 +24,14 @@ const EnvSchema = v.object({
     v.string('Must be a string.'),
     v.nonEmpty('Must not be empty.'),
   ),
+  GOOGLE_CLIENT_ID: v.pipe(
+    v.string('Must be a string.'),
+    v.nonEmpty('Must not be empty.'),
+  ),
+  GOOGLE_CLIENT_SECRET: v.pipe(
+    v.string('Must be a string.'),
+    v.nonEmpty('Must not be empty.'),
+  ),
 })
 
 export function getEnv(context: AppLoadContext) {
