@@ -7,6 +7,11 @@ import { v7 as uuidv7 } from 'uuid'
 
 const config = {
   account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ['github'],
+      updateUserInfoOnLink: true,
+    },
     fields: {
       accessToken: 'access_token',
       accessTokenExpiresAt: 'access_token_expires_at',
@@ -87,7 +92,10 @@ const config = {
 
 export let auth: ReturnType<typeof betterAuth<typeof config>>
 
-export function createAuth(dialect: Dialect): typeof auth {
+export function createAuth(
+  env: Omit<Env, 'LISTS' | 'LIST_ITEMS'>,
+  dialect: Dialect,
+): typeof auth {
   if (!auth) {
     auth = betterAuth({
       database: {
@@ -111,6 +119,15 @@ export function createAuth(dialect: Dialect): typeof auth {
           ],
         }),
         type: 'sqlite',
+      },
+      socialProviders: {
+        github: {
+          clientId: env.GITHUB_CLIENT_ID,
+          clientSecret: env.GITHUB_CLIENT_SECRET,
+          disableImplicitSignUp: true,
+          enabled: true,
+          overrideUserInfoOnSignIn: true,
+        },
       },
       ...config,
     } satisfies BetterAuthOptions)

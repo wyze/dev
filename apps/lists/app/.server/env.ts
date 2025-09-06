@@ -16,6 +16,14 @@ const EnvSchema = v.object({
       v.minLength(1, 'Must have at least 1 secret.'),
     ),
   ),
+  GITHUB_CLIENT_ID: v.pipe(
+    v.string('Must be a string.'),
+    v.nonEmpty('Must not be empty.'),
+  ),
+  GITHUB_CLIENT_SECRET: v.pipe(
+    v.string('Must be a string.'),
+    v.nonEmpty('Must not be empty.'),
+  ),
 })
 
 export function getEnv(context: AppLoadContext) {

@@ -1,5 +1,5 @@
 import { Button } from '@wyze/ui/button'
-import { data } from 'react-router'
+import { data, redirect } from 'react-router'
 import * as v from 'valibot'
 
 import { auth } from '~/.server/auth'
@@ -33,6 +33,28 @@ export async function action({ request }: Route.ActionArgs) {
           body,
           returnHeaders: true,
         })
+
+        return data({ ok: true, value: null }, { headers })
+      } catch (error) {
+        const value = v.parse(ErrorSchema, error)
+
+        return { ok: false, value }
+      }
+    }
+    case 'social': {
+      try {
+        const { headers, response } = await auth.api.signInSocial({
+          body: {
+            provider: form.provider,
+            callbackURL: '/',
+            errorCallbackURL: '/sign-in',
+          },
+          returnHeaders: true,
+        })
+
+        if (response.redirect) {
+          return redirect(`${response.url}`)
+        }
 
         return data({ ok: true, value: null }, { headers })
       } catch (error) {

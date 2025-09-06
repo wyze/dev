@@ -16,15 +16,21 @@ export const ErrorSchema = v.union([
   ),
 ])
 
-export const FormSchema = v.object({
-  intent: v.literal('email'),
-  email: v.pipe(
-    v.string('Must be a string.'),
-    v.email('Must be an email address.'),
-  ),
-  password: v.pipe(
-    v.string('Must be a string.'),
-    v.minLength(8, 'Must be at least 8 characters long.'),
-    v.maxLength(128, 'Cannot be more than 128 characters long.'),
-  ),
-})
+export const FormSchema = v.variant('intent', [
+  v.object({
+    intent: v.literal('email'),
+    email: v.pipe(
+      v.string('Must be a string.'),
+      v.email('Must be an email address.'),
+    ),
+    password: v.pipe(
+      v.string('Must be a string.'),
+      v.minLength(8, 'Must be at least 8 characters long.'),
+      v.maxLength(128, 'Cannot be more than 128 characters long.'),
+    ),
+  }),
+  v.object({
+    intent: v.literal('social'),
+    provider: v.picklist(['github']),
+  }),
+])

@@ -1,7 +1,13 @@
 import { Icon } from '@wyze/icons'
 import { Alert, AlertTitle } from '@wyze/ui/alert'
 import { Button } from '@wyze/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@wyze/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@wyze/ui/card'
 import { Input } from '@wyze/ui/input'
 import { Label } from '@wyze/ui/label'
 import * as React from 'react'
@@ -19,14 +25,25 @@ import type { Result } from '~/types'
 
 import type { Route } from './+types/route'
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({
+  request,
+}: Route.LoaderArgs): Promise<Response | Result<null, string>> {
   const session = await auth.api.getSession({ headers: request.headers })
 
   if (session) {
     return redirect('/')
   }
 
-  return { ok: true }
+  const error = new URL(request.url).searchParams.get('error') ?? null
+
+  switch (error) {
+    case null:
+      return { ok: true, value: null }
+    case 'signup_disabled':
+      return { ok: false, value: 'Sign up is disabled on sign in page.' }
+    default:
+      return { ok: false, value: error }
+  }
 }
 
 function useRouteActionData<T>(routeId: string): T | undefined {
@@ -39,7 +56,7 @@ function useRouteActionData<T>(routeId: string): T | undefined {
   return context.actionData?.[routeId]
 }
 
-export default function AuthRoute() {
+export default function AuthRoute({ loaderData }: Route.ComponentProps) {
   const emailId = React.useId()
   const passwordId = React.useId()
   const [type, setType] = React.useState<'password' | 'text'>('password')
@@ -48,6 +65,10 @@ export default function AuthRoute() {
   const actionData = useRouteActionData<Result<null, string>>(
     `modules/auth/${segment}`,
   )
+  const action = segment
+    ?.slice(0, 1)
+    .toUpperCase()
+    .concat(segment.slice(1).replace('-', ' '))
 
   const isSignin = segment === 'sign-in'
 
@@ -67,13 +88,42 @@ export default function AuthRoute() {
               <CardTitle className="text-xl">
                 {isSignin ? 'Welcome back' : 'Create account'}
               </CardTitle>
+              <CardDescription>
+                {action} with your GitHub account
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
+                <Form
+                  action={segment}
+                  className="flex flex-col gap-4"
+                  method="post"
+                >
+                  <Button
+                    className="w-full"
+                    name="intent"
+                    type="submit"
+                    value="social"
+                    variant="outline"
+                  >
+                    <input type="hidden" name="provider" value="github" />
+                    <Icon name="github" />
+                    {action} with GitHub
+                  </Button>
+                </Form>
+                <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-border after:border-t">
+                  <span className="relative z-10 bg-card px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
                 <Form action={segment} className="grid gap-6" method="post">
                   {actionData?.ok === false ? (
                     <Alert variant="danger">
                       <AlertTitle>{actionData.value}</AlertTitle>
+                    </Alert>
+                  ) : loaderData.value ? (
+                    <Alert variant="danger">
+                      <AlertTitle>{loaderData.value}</AlertTitle>
                     </Alert>
                   ) : null}
 

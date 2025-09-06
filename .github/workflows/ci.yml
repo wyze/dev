@@ -83,6 +83,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-typecheck-
 
+      - name: Import secrets
+        run: |
+          echo ${{ secrets.LISTS_ENV }} | tr ' ' '\n' > apps/lists/.env
+
       - name: Typecheck
         run: pnpm typecheck
 

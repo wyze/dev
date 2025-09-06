@@ -35,7 +35,7 @@ export default {
     const dialect = new D1Dialect({ database: env.DB })
 
     if (!auth) {
-      createAuth(dialect)
+      createAuth(env, dialect)
     }
 
     if (!db) {
