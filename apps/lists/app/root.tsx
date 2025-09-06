@@ -29,10 +29,13 @@ import '@wyze/ui/globals.css'
 
 import { auth } from '~/.server/auth'
 import { getToast } from '~/.server/toast'
-import logo from '~/assets/logo.png'
+import logoLocal from '~/assets/logo.local.png'
+import logoProd from '~/assets/logo.png'
 import { usePathSegment } from '~/hooks/use-path-segment'
 
 import type { Route } from './+types/root'
+
+const logo = import.meta.env.PROD ? logoProd : logoLocal
 
 const FormSchema = v.object({
   intent: v.literal('logout'),
