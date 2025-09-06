@@ -1,6 +1,19 @@
 import type { AppLoadContext } from 'react-router'
 import * as v from 'valibot'
 
+if (process.env.CI) {
+  const keys = [
+    'GITHUB_CLIENT_ID',
+    'GITHUB_CLIENT_SECRET',
+    'GOOGLE_CLIENT_ID',
+    'GOOGLE_CLIENT_SECRET',
+  ]
+
+  for (const key of keys) {
+    process.env[key] = key
+  }
+}
+
 const EnvSchema = v.object({
   BETTER_AUTH_SECRET: v.pipe(
     v.string('Must be a string.'),

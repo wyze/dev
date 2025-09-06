@@ -1,9 +1,36 @@
-import { type BetterAuthOptions, betterAuth } from 'better-auth'
-import { anonymous } from 'better-auth/plugins'
+import {
+  type BetterAuthOptions,
+  type BetterAuthPlugin,
+  betterAuth,
+} from 'better-auth'
+import { anonymous, createAuthMiddleware } from 'better-auth/plugins'
 import type { Dialect } from 'kysely'
 import { Kysely } from 'kysely'
 import { defaultDeserializer, SerializePlugin } from 'kysely-plugin-serialize'
 import { v7 as uuidv7 } from 'uuid'
+
+const removeTestData = () =>
+  ({
+    id: 'removeTestData',
+    hooks: {
+      before: [
+        {
+          matcher: () => true,
+          handler: createAuthMiddleware(async (ctx) => {
+            const user = await ctx.context.internalAdapter.findUserByEmail(
+              `${process.env.GOOGLE_AUTH_EMAIL}`,
+            )
+
+            if (user) {
+              await ctx.context.internalAdapter.deleteUser(user.user.id)
+            }
+
+            return { context: ctx }
+          }),
+        },
+      ],
+    },
+  }) satisfies BetterAuthPlugin
 
 const config = {
   account: {
@@ -52,6 +79,7 @@ const config = {
     anonymous({
       schema: { user: { fields: { isAnonymous: 'is_anonymous' } } },
     }),
+    ...(import.meta.env.PROD ? [] : [removeTestData()]),
   ],
   session: {
     cookieCache: {

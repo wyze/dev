@@ -1,6 +1,6 @@
 import { test as base, expect } from '@playwright/test'
 
-import { ListsPage } from './lists-page'
+import { ListsPage } from './fixtures/lists-page'
 
 const test = base.extend<{ listsPage: ListsPage }>({
   listsPage: async ({ page }, use) => {

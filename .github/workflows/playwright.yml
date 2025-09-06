@@ -24,7 +24,8 @@ jobs:
         app: [lists]
         include:
           - app: lists
-            env_secret: LISTS_ENV
+            app_env_secret: LISTS_LOCAL_ENV
+            e2e_env_secret: LISTS_E2E_ENV
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -83,7 +84,8 @@ jobs:
 
       - name: Import secrets
         run: |
-          echo ${{ secrets[matrix.env_secret] }} | tr ' ' '\n' > apps/${{ matrix.app }}/build/server/.env
+          echo ${{ secrets[matrix.app_env_secret] }} | tr ' ' '\n' > apps/${{ matrix.app }}/build/server/.env
+          echo ${{ secrets[matrix.e2e_env_secret] }} | tr ' ' '\n' > e2e/${{ matrix.app }}/.env
 
       - name: Run Playwright tests
         run: pnpm e2e --filter=${{ matrix.app }}-e2e

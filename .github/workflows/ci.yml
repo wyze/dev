@@ -84,6 +84,7 @@ jobs:
             ${{ runner.os }}-turbo-typecheck-
 
       - name: Import secrets
+        if: ${{ github.actor != 'dependabot[bot]' }}
         run: |
           echo ${{ secrets.LISTS_ENV }} | tr ' ' '\n' > apps/lists/.env
 

@@ -11,6 +11,7 @@
     "@playwright/test": "^1.55.0",
     "@types/node": "catalog:",
     "@wyze/typescript-config": "workspace:*",
-    "lists": "workspace:*"
+    "lists": "workspace:*",
+    "otpauth": "^9.4.1"
   }
 }
