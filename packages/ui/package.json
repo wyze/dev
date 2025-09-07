@@ -14,7 +14,7 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@base-ui-components/react": "^1.0.0-beta.2",
+    "@base-ui-components/react": "^1.0.0-beta.3",
     "@wyze/icons": "workspace:*",
     "class-variance-authority": "~0.7.1",
     "clsx": "^2.1.1",
@@ -23,8 +23,8 @@
   },
   "devDependencies": {
     "@wyze/typescript-config": "workspace:*",
-    "tailwindcss": "^4.1.12",
-    "tw-animate-css": "^1.3.7",
+    "tailwindcss": "^4.1.13",
+    "tw-animate-css": "^1.3.8",
     "typescript": "catalog:",
     "vite": "catalog:"
   },
