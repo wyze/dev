@@ -26,7 +26,8 @@ test('able to sign in to an existing account', async ({ page }) => {
   await page.getByPlaceholder('me@example.com').fill(email)
   await page.getByPlaceholder('••••••••••••').fill(password)
   await page.getByRole('button', { name: 'Create account' }).click()
-  await page.getByText('Logout').click()
+  await page.getByRole('button', { name: 'User menu' }).click()
+  await page.getByText('Log out').click()
   await page.getByPlaceholder('me@example.com').fill(email)
   await page.getByPlaceholder('••••••••••••').fill(password)
   await page.getByRole('button', { name: 'Sign in', exact: true }).click()
@@ -36,11 +37,17 @@ test('able to sign in to an existing account', async ({ page }) => {
 test('throws error when trying to create duplicate account', async ({
   page,
 }) => {
-  const email = 'me@example.com'
+  const email = `${randomUUID()}@example.com`
   const password = randomUUID()
 
   await page.goto('/')
   await page.getByText('Sign in').click()
+  await page.getByText('Sign up').click()
+  await page.getByPlaceholder('me@example.com').fill(email)
+  await page.getByPlaceholder('••••••••••••').fill(password)
+  await page.getByRole('button', { name: 'Create account' }).click()
+  await page.getByRole('button', { name: 'User menu' }).click()
+  await page.getByText('Log out').click()
   await page.getByText('Sign up').click()
   await page.getByPlaceholder('me@example.com').fill(email)
   await page.getByPlaceholder('••••••••••••').fill(password)
