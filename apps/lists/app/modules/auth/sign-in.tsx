@@ -31,6 +31,7 @@ export async function action({ request }: Route.ActionArgs) {
       try {
         const { headers } = await auth.api.signInEmail({
           body,
+          headers: request.headers,
           returnHeaders: true,
         })
 
@@ -49,6 +50,7 @@ export async function action({ request }: Route.ActionArgs) {
             callbackURL: '/',
             errorCallbackURL: '/sign-in',
           },
+          headers: request.headers,
           returnHeaders: true,
         })
 

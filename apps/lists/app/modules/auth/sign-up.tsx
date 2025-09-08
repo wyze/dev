@@ -32,6 +32,7 @@ export async function action({ request }: Route.ActionArgs) {
       try {
         const { headers } = await auth.api.signUpEmail({
           body,
+          headers: request.headers,
           returnHeaders: true,
         })
 
@@ -50,6 +51,7 @@ export async function action({ request }: Route.ActionArgs) {
             provider: form.provider,
             requestSignUp: true,
           },
+          headers: request.headers,
           returnHeaders: true,
         })
 

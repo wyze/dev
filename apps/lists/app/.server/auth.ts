@@ -8,6 +8,9 @@ import type { Dialect } from 'kysely'
 import { Kysely } from 'kysely'
 import { defaultDeserializer, SerializePlugin } from 'kysely-plugin-serialize'
 import { v7 as uuidv7 } from 'uuid'
+import type { Env } from 'workers/app'
+
+import { migrate } from '~/modules/list/helpers/migrate'
 
 const removeTestData = () =>
   ({
@@ -75,12 +78,7 @@ const config = {
     enabled: true,
     revokeSessionsOnPasswordReset: true,
   },
-  plugins: [
-    anonymous({
-      schema: { user: { fields: { isAnonymous: 'is_anonymous' } } },
-    }),
-    ...(import.meta.env.PROD ? [] : [removeTestData()]),
-  ],
+  plugins: [anonymous(), ...(import.meta.env.PROD ? [] : [removeTestData()])],
   session: {
     cookieCache: {
       enabled: true,
@@ -120,10 +118,7 @@ const config = {
 
 export let auth: ReturnType<typeof betterAuth<typeof config>>
 
-export function createAuth(
-  env: Omit<Env, 'LISTS' | 'LIST_ITEMS'>,
-  dialect: Dialect,
-): typeof auth {
+export function createAuth(env: Env, dialect: Dialect): typeof auth {
   if (!auth) {
     auth = betterAuth({
       database: {
@@ -165,6 +160,16 @@ export function createAuth(
         },
       },
       ...config,
+      plugins: [
+        anonymous({
+          emailDomainName: 'lists.wyze.dev',
+          async onLinkAccount({ anonymousUser, newUser }) {
+            await migrate(env, anonymousUser.user, newUser.user)
+          },
+          schema: { user: { fields: { isAnonymous: 'is_anonymous' } } },
+        }),
+        ...(import.meta.env.PROD ? [] : [removeTestData()]),
+      ],
     } satisfies BetterAuthOptions)
   }
 

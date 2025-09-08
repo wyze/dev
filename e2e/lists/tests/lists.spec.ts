@@ -1,6 +1,7 @@
 import { test as base, expect } from '@playwright/test'
 
 import { ListsPage } from './fixtures/lists-page'
+import { randomUUID } from 'node:crypto'
 
 const test = base.extend<{ listsPage: ListsPage }>({
   listsPage: async ({ page }, use) => {
@@ -163,4 +164,22 @@ test('able to toggle list item completion', async ({ listsPage: _, page }) => {
   await checkbox.click()
   await expect(checkbox).toHaveAttribute('aria-checked', 'false')
   await expect(page.getByText('0 of 1 completed')).toBeVisible()
+})
+
+test('able to migrate anonymous user to real user', async ({
+  listsPage,
+  page,
+}) => {
+  const id = randomUUID()
+  const password = randomUUID()
+  const url = page.url()
+
+  await page.getByRole('button', { name: 'User menu' }).click()
+  await page.getByText('Sign up').click()
+  await page.getByPlaceholder('me@example.com').fill(`${id}@example.com`)
+  await page.getByPlaceholder('••••••••••••').fill(password)
+  await page.getByRole('button', { name: 'Create account' }).click()
+  await page.goto(url)
+  await expect(page).toHaveTitle(`${listsPage.title} · Lists`)
+  await expect(page.getByText(listsPage.title)).toBeVisible()
 })

@@ -23,7 +23,7 @@ export default function ListIndex({ loaderData }: Route.ComponentProps) {
   return (
     <div>
       {loaderData.lists.map((list) => (
-        <Link key={list.id} to={list.id}>
+        <Link key={list.id} to={`${list.shortId}/${list.slug}`}>
           {list.name} ({pluralize('entry', list.entries)})
         </Link>
       ))}

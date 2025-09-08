@@ -27,10 +27,12 @@ import type { Route } from './+types/route'
 
 export async function loader({
   request,
-}: Route.LoaderArgs): Promise<Response | Result<null, string>> {
+}: Route.LoaderArgs): Promise<
+  Response | Result<{ anonymous: boolean }, string>
+> {
   const session = await auth.api.getSession({ headers: request.headers })
 
-  if (session) {
+  if (session && !session.user.isAnonymous) {
     return redirect('/')
   }
 
@@ -38,7 +40,10 @@ export async function loader({
 
   switch (error) {
     case null:
-      return { ok: true, value: null }
+      return {
+        ok: true,
+        value: { anonymous: session?.user.isAnonymous ?? false },
+      }
     case 'signup_disabled':
       return { ok: false, value: 'Sign up is disabled on the sign in page.' }
     default:
@@ -140,7 +145,7 @@ export default function AuthRoute({ loaderData }: Route.ComponentProps) {
                     <Alert variant="danger">
                       <AlertTitle>{actionData.value}</AlertTitle>
                     </Alert>
-                  ) : loaderData.value ? (
+                  ) : !loaderData.ok ? (
                     <Alert variant="danger">
                       <AlertTitle>{loaderData.value}</AlertTitle>
                     </Alert>
@@ -184,15 +189,17 @@ export default function AuthRoute({ loaderData }: Route.ComponentProps) {
                   </div>
                   <Outlet />
                 </Form>
-                <div className="text-center text-sm">
-                  {isSignin ? "Don't" : 'Already'} have an account?{' '}
-                  <Link
-                    to={isSignin ? 'sign-up' : 'sign-in'}
-                    className="underline underline-offset-4"
-                  >
-                    Sign {isSignin ? 'up' : 'in'}
-                  </Link>
-                </div>
+                {loaderData.ok && loaderData.value.anonymous ? null : (
+                  <div className="text-center text-sm">
+                    {isSignin ? "Don't" : 'Already'} have an account?{' '}
+                    <Link
+                      to={isSignin ? 'sign-up' : 'sign-in'}
+                      className="underline underline-offset-4"
+                    >
+                      Sign {isSignin ? 'up' : 'in'}
+                    </Link>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -93,7 +93,8 @@ export async function action(args: Route.ActionArgs) {
 
   try {
     const { user } = signIn
-    const lists = context.cloudflare.env.LISTS.getByName(user.id)
+    const { env } = context.cloudflare
+    const lists = env.LISTS.getByName(user.id)
     const list = await lists.create({ id: createUuid(), name, type: 'basic' })
 
     if (!list) {
@@ -104,7 +105,7 @@ export async function action(args: Route.ActionArgs) {
       )
     }
 
-    const listItems = context.cloudflare.env.LIST_ITEMS.getByName(list.id)
+    const listItems = env.LIST_ITEMS.getByName(list.id)
     await listItems.create(list.id, { id: createUuid(), content: label.output })
 
     const now = new Date()

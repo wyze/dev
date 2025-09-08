@@ -19,11 +19,13 @@ interface Data {
 
 export class List extends Base<{ list: Data }> {
   env: Env
+  storage: DurableObjectStorage
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env, provider)
 
     this.env = env
+    this.storage = ctx.storage
   }
 
   private slugify<T extends { name?: string }>(list: T) {
@@ -75,8 +77,9 @@ export class List extends Base<{ list: Data }> {
         Promise.all(
           lists.map(async (list) => {
             const entries = await this.env.LIST_ITEMS.getByName(list.id).count
+            const withShortId = this.addShortId(list)
 
-            return { ...list, entries }
+            return { ...withShortId, ...list, entries }
           }),
         ),
       )
@@ -97,5 +100,10 @@ export class List extends Base<{ list: Data }> {
       .where('id', '=', list.id)
       .returning(['id', 'slug'])
       .executeTakeFirst()
+  }
+
+  async destroy() {
+    await this.db.deleteFrom('list').execute()
+    await this.storage.deleteAll()
   }
 }

@@ -1,4 +1,5 @@
 import { Icon } from '@wyze/icons'
+import { Avatar, AvatarFallback, AvatarImage } from '@wyze/ui/avatar'
 import { Button } from '@wyze/ui/button'
 import {
   Card,
@@ -7,6 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@wyze/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@wyze/ui/dropdown-menu'
 import { Toaster } from '@wyze/ui/sonner'
 import * as React from 'react'
 import {
@@ -89,6 +99,77 @@ function useToast() {
   }, [input])
 }
 
+function UserMenu() {
+  const { user } = useLoaderData<typeof loader>()
+
+  // We will have a user here, but TypeScript doesn't know it
+  if (!user) {
+    return null
+  }
+
+  const initials = user.name
+    .split(' ')
+    .map(([letter]) => letter.toUpperCase())
+    .join('')
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button variant="ghost" className="relative size-8 rounded-full" />
+        }
+      >
+        <span className="sr-only">User menu</span>
+        <Avatar className="size-8">
+          <AvatarImage
+            src={user.image ?? undefined}
+            alt={user.name ?? 'User'}
+          />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="font-medium text-sm leading-none">{user.name}</p>
+              <p className="overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground text-xs leading-none">
+                {user.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
+        {user.isAnonymous ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem render={<Link to="/sign-up" />}>
+              <Icon className="mr-2 size-4" name="users" />
+              <span>Sign up</span>
+            </DropdownMenuItem>
+          </>
+        ) : null}
+        <DropdownMenuSeparator />
+        <Form method="post">
+          <DropdownMenuItem
+            render={
+              <Button
+                className="w-full justify-start"
+                name="intent"
+                value="logout"
+                type="submit"
+                variant="ghost"
+              />
+            }
+          >
+            <Icon className="mr-2 size-4" name="log-out" />
+            <span>Log out</span>
+          </DropdownMenuItem>
+        </Form>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user } = useLoaderData<typeof loader>()
   const segment = usePathSegment(0)
@@ -127,17 +208,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   </h1>
                 </Link>
                 {user ? (
-                  <Form method="post">
-                    <Button
-                      name="intent"
-                      size="sm"
-                      value="logout"
-                      variant="outline"
-                      type="submit"
-                    >
-                      Logout
-                    </Button>
-                  </Form>
+                  <UserMenu />
                 ) : (
                   <Button
                     render={<Link to="/sign-in" />}
