@@ -1,11 +1,23 @@
 import { Button } from '@wyze/ui/button'
-import { data, redirect } from 'react-router'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@wyze/ui/card'
+import { data, Link, redirect } from 'react-router'
 import * as v from 'valibot'
 
 import { auth } from '~/.server/auth'
 
 import type { Route } from './+types/sign-up'
+import { AuthForm } from './components/auth-form'
+import { EmailInput } from './components/email-input'
+import { PasswordInput } from './components/password-input'
+import { SocialButtons } from './components/social-buttons'
 import { ErrorSchema, FormSchema } from './helpers/schemas'
+import { useAuthAction } from './hooks/use-auth-action'
 import { useIsNavigating } from './hooks/use-is-navigating'
 
 export async function action({ request }: Route.ActionArgs) {
@@ -70,21 +82,44 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function SignupRoute() {
+  const { action } = useAuthAction()
   const isNavigating = useIsNavigating()
 
   return (
     <>
       <title>Sign up · Lists</title>
-
-      <Button
-        className="w-full"
-        disabled={isNavigating}
-        name="intent"
-        type="submit"
-        value="email"
-      >
-        {isNavigating ? 'Creating account...' : 'Create account'}
-      </Button>
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">Create account</CardTitle>
+          <CardDescription>
+            {action} with your GitHub or Google account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-6">
+            <SocialButtons />
+            <AuthForm>
+              <EmailInput />
+              <PasswordInput />
+              <Button
+                className="w-full text-sm"
+                disabled={isNavigating}
+                name="intent"
+                type="submit"
+                value="email"
+              >
+                {isNavigating ? 'Creating account...' : 'Create account'}
+              </Button>
+            </AuthForm>
+            <div className="text-center text-sm">
+              Already have an account?{' '}
+              <Link to="/sign-in" className="underline underline-offset-4">
+                Sign in
+              </Link>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </>
   )
 }

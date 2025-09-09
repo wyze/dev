@@ -53,6 +53,13 @@ test('able to create a new account with google', async ({ page }) => {
   await page.getByRole('button', { name: 'Next' }).click()
   await page.getByRole('textbox', { name: 'Enter code' }).fill(totp())
   await page.getByRole('button', { name: 'Next' }).click()
+  await page.waitForTimeout(1000)
+
+  if ((await page.getByText('Wrong code. Try again.').count()) > 0) {
+    await page.getByRole('textbox', { name: 'Enter code' }).fill(totp())
+    await page.getByRole('button', { name: 'Next' }).click()
+  }
+
   await page.getByRole('button', { name: 'Continue' }).click()
   await expect(page.getByText('Add your first item')).toBeVisible()
 })
