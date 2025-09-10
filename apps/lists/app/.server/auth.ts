@@ -1,4 +1,5 @@
 import {
+  APIError,
   type BetterAuthOptions,
   type BetterAuthPlugin,
   betterAuth,
@@ -10,6 +11,7 @@ import { defaultDeserializer, SerializePlugin } from 'kysely-plugin-serialize'
 import { v7 as uuidv7 } from 'uuid'
 import type { Env } from 'workers/app'
 
+import { sendResetPassword } from '~/modules/auth/helpers/send-password-reset'
 import { migrate } from '~/modules/list/helpers/migrate'
 
 const removeTestData = () =>
@@ -62,6 +64,47 @@ const config = {
     ipAddress: { ipAddressHeaders: ['cf-connecting-ip'] },
   },
   databaseHooks: {
+    account: {
+      update: {
+        async before(data, ctx) {
+          const id = `reset-password:${ctx?.body.token}`
+          const verification =
+            await ctx?.context.internalAdapter.findVerificationValue(id)
+
+          if (!verification) {
+            throw new APIError('BAD_REQUEST', {
+              message: 'Unable to find verification record',
+            })
+          }
+
+          const accounts = await ctx?.context.internalAdapter.findAccounts(
+            verification.value,
+          )
+          const account = accounts?.find(
+            (account) => account.providerId === 'credential',
+          )
+
+          if (!account) {
+            throw new APIError('BAD_REQUEST', {
+              message: 'Unable to find account record',
+            })
+          }
+
+          const compare = await ctx?.context.password.verify({
+            hash: account.password ?? '',
+            password: ctx.body.newPassword,
+          })
+
+          if (compare) {
+            throw new APIError('BAD_REQUEST', {
+              message: 'Password matches previous password',
+            })
+          }
+
+          return { data }
+        },
+      },
+    },
     user: {
       create: {
         async before(user) {
@@ -160,6 +203,20 @@ export function createAuth(env: Env, dialect: Dialect): typeof auth {
         },
       },
       ...config,
+      emailAndPassword: {
+        ...config.emailAndPassword,
+        async sendResetPassword({ user, url }) {
+          if (env.RESEND_API_KEY === 're_test') {
+            return
+          }
+
+          const response = await sendResetPassword(env, { user, url })
+
+          if (response.error) {
+            throw response.error
+          }
+        },
+      },
       plugins: [
         anonymous({
           emailDomainName: 'lists.wyze.dev',

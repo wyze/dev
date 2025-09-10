@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "check": "biome check --write .",
     "dev": "PWTEST_WATCH=1 playwright test",
     "e2e": "playwright test"
   },

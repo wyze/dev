@@ -10,6 +10,8 @@ export default [
   index('modules/home/route.tsx'),
   route('api/auth/*', 'modules/auth/api.ts'),
   layout('modules/auth/route.tsx', [
+    route('forgot-password', 'modules/auth/forgot-password.tsx'),
+    route('reset-password', 'modules/auth/reset-password.tsx'),
     route('sign-in', 'modules/auth/sign-in.tsx'),
     route('sign-up', 'modules/auth/sign-up.tsx'),
   ]),

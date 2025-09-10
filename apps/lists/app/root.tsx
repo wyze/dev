@@ -173,7 +173,11 @@ function UserMenu() {
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user } = useLoaderData<typeof loader>()
   const segment = usePathSegment(0)
-  const isAuthRoute = segment?.startsWith('sign-') ?? false
+  const isAuthRoute = segment
+    ? ['sign-in', 'sign-up', 'forgot-password', 'reset-password'].includes(
+        segment,
+      )
+    : false
 
   useToast()
 

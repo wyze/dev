@@ -2,15 +2,20 @@ import type { AppLoadContext } from 'react-router'
 import * as v from 'valibot'
 
 if (process.env.CI) {
-  const keys = [
+  const envs = [
     'GITHUB_CLIENT_ID',
     'GITHUB_CLIENT_SECRET',
     'GOOGLE_CLIENT_ID',
     'GOOGLE_CLIENT_SECRET',
+    'RESEND_API_KEY:re_send_api_key',
   ]
 
-  for (const key of keys) {
-    process.env[key] = key
+  for (const env of envs) {
+    const [key, value = key] = env.split(':')
+
+    if (process.env[key] === undefined) {
+      process.env[key] = value
+    }
   }
 }
 
@@ -44,6 +49,11 @@ const EnvSchema = v.object({
   GOOGLE_CLIENT_SECRET: v.pipe(
     v.string('Must be a string.'),
     v.nonEmpty('Must not be empty.'),
+  ),
+  RESEND_API_KEY: v.pipe(
+    v.string('Must be a string.'),
+    v.nonEmpty('Must not be empty.'),
+    v.startsWith('re_', 'Not a valid key.'),
   ),
 })
 

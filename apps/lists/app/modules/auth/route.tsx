@@ -17,7 +17,8 @@ export async function loader({
     return redirect('/')
   }
 
-  const error = new URL(request.url).searchParams.get('error') ?? null
+  const error =
+    new URL(request.url).searchParams.get('error')?.toLowerCase() ?? null
 
   switch (error) {
     case null:
@@ -25,6 +26,8 @@ export async function loader({
         ok: true,
         value: { anonymous: session?.user.isAnonymous ?? false },
       }
+    case 'invalid_token':
+      return { ok: false, value: 'Reset password token is no longer valid.' }
     case 'signup_disabled':
       return { ok: false, value: 'Sign up is disabled on the sign in page.' }
     default:

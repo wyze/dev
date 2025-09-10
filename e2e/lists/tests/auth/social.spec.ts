@@ -28,8 +28,28 @@ test('throws error when trying to sign in with google without existing account',
     .getByRole('textbox', { name: 'Enter your password' })
     .fill(`${process.env.GOOGLE_AUTH_PASSWORD}`)
   await page.getByRole('button', { name: 'Next' }).click()
-  await page.getByRole('textbox', { name: 'Enter code' }).fill(totp())
+
+  let code = totp()
+
+  await page.getByRole('textbox', { name: 'Enter code' }).fill(code)
   await page.getByRole('button', { name: 'Next' }).click()
+  await page.waitForTimeout(500)
+
+  if ((await page.getByText('Wrong code. Try again.').count()) > 0) {
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        const next = totp()
+
+        if (next !== code) {
+          code = next
+
+          clearInterval(interval)
+          resolve(null)
+        }
+      }, 500)
+    })
+  }
+
   await page.getByRole('button', { name: 'Continue' }).click()
   await expect(
     page.getByRole('heading', {
@@ -51,11 +71,27 @@ test('able to create a new account with google', async ({ page }) => {
     .getByRole('textbox', { name: 'Enter your password' })
     .fill(`${process.env.GOOGLE_AUTH_PASSWORD}`)
   await page.getByRole('button', { name: 'Next' }).click()
-  await page.getByRole('textbox', { name: 'Enter code' }).fill(totp())
+
+  let code = totp()
+
+  await page.getByRole('textbox', { name: 'Enter code' }).fill(code)
   await page.getByRole('button', { name: 'Next' }).click()
-  await page.waitForTimeout(1000)
+  await page.waitForTimeout(500)
 
   if ((await page.getByText('Wrong code. Try again.').count()) > 0) {
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        const next = totp()
+
+        if (next !== code) {
+          code = next
+
+          clearInterval(interval)
+          resolve(null)
+        }
+      }, 500)
+    })
+
     await page.getByRole('textbox', { name: 'Enter code' }).fill(totp())
     await page.getByRole('button', { name: 'Next' }).click()
   }

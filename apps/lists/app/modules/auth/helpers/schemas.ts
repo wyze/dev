@@ -16,6 +16,12 @@ export const ErrorSchema = v.union([
   ),
 ])
 
+export const PasswordSchema = v.pipe(
+  v.string('Must be a string.'),
+  v.minLength(8, 'Must be at least 8 characters long.'),
+  v.maxLength(128, 'Cannot be more than 128 characters long.'),
+)
+
 export const FormSchema = v.variant('intent', [
   v.object({
     intent: v.literal('email'),
@@ -23,11 +29,7 @@ export const FormSchema = v.variant('intent', [
       v.string('Must be a string.'),
       v.email('Must be an email address.'),
     ),
-    password: v.pipe(
-      v.string('Must be a string.'),
-      v.minLength(8, 'Must be at least 8 characters long.'),
-      v.maxLength(128, 'Cannot be more than 128 characters long.'),
-    ),
+    password: PasswordSchema,
   }),
   v.object({
     intent: v.literal('social'),

@@ -13,8 +13,18 @@ interface ListMetadata {
   updated_at: Date
 }
 
+interface Verification {
+  id: Uuid
+  identifier: string
+  value: string
+  expires_at: Date
+  created_at: Date | null
+  updated_at: Date | null
+}
+
 interface Database {
   list_metadata: ListMetadata
+  verification: Verification
 }
 
 export let db: Kysely<Database>

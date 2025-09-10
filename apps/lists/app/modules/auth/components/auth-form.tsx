@@ -3,6 +3,7 @@ import * as React from 'react'
 import {
   Form,
   UNSAFE_DataRouterStateContext,
+  useLocation,
   useRouteLoaderData,
 } from 'react-router'
 
@@ -22,6 +23,7 @@ function useRouteActionData<T>(routeId: string): T | undefined {
 
 export function AuthForm({ children }: { children: React.ReactNode }) {
   const { pathname, segment } = useAuthAction()
+  const { search } = useLocation()
   const actionData = useRouteActionData<Result<null, string>>(
     `modules/auth/${segment}`,
   )
@@ -31,7 +33,7 @@ export function AuthForm({ children }: { children: React.ReactNode }) {
     )
 
   return (
-    <Form action={pathname} className="grid gap-6" method="post">
+    <Form action={`${pathname}${search}`} className="grid gap-6" method="post">
       {actionData?.ok === false ? (
         <Alert variant="danger">
           <AlertTitle>{actionData.value}</AlertTitle>
