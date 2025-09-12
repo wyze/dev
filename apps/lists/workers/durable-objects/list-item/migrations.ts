@@ -19,6 +19,23 @@ const migrations: Record<string, Migration> = {
         .execute()
     },
   },
+  '2025_09_10_00_add_attribute_table': {
+    async up(db) {
+      await db.schema
+        .createTable('attribute')
+        .ifNotExists()
+        .addColumn('list_item_id', 'varchar(36)', (column) =>
+          column.notNull().references('list_item.id').onDelete('cascade'),
+        )
+        .addColumn('attribute', 'varchar(100)', (column) => column.notNull())
+        .addColumn('value', 'text', (column) => column.notNull())
+        .addPrimaryKeyConstraint('attribute_pkey', [
+          'list_item_id',
+          'attribute',
+        ])
+        .execute()
+    },
+  },
 }
 
 class StaticMigrationProvider implements MigrationProvider {

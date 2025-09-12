@@ -12,7 +12,6 @@ import {
   CardTitle,
 } from '@wyze/ui/card'
 import { Input } from '@wyze/ui/input'
-import { Tabs, TabsList, TabsTrigger } from '@wyze/ui/tabs'
 import * as React from 'react'
 import { data, redirect, useNavigation, useSubmit } from 'react-router'
 import * as v from 'valibot'
@@ -24,6 +23,7 @@ import { pluralize } from '~/helpers/pluralize'
 
 import type { Route } from './+types/details'
 import { Item } from './components/item'
+import { ListTypeDropdownMenu } from './components/list-type-dropdown-menu'
 import { ListSchema } from './helpers/schemas'
 
 type State = {
@@ -75,6 +75,19 @@ const FormSchema = v.variant('intent', [
       ),
     ),
   }),
+  v.objectWithRest(
+    {
+      intent: v.literal('update-item'),
+      id: UuidSchema,
+      content: v.optional(
+        v.pipe(
+          v.string('Item must be a string.'),
+          v.nonEmpty('Item must not be empty.'),
+        ),
+      ),
+    },
+    v.string(),
+  ),
   v.object({
     intent: v.literal('update-item-label'),
     id: UuidSchema,
@@ -165,6 +178,48 @@ export async function action(args: Route.ActionArgs) {
           type: 'success',
         }),
       })
+    case 'update-item': {
+      const { id, content, ...rest } = form
+      const items = env.LIST_ITEMS.getByName(list.id)
+
+      if (content) {
+        await items.update({ id, content })
+      }
+
+      const attributes = Object.entries(rest)
+        .filter(([, value]) => Boolean(value))
+        .map(([key, value]) => {
+          switch (key) {
+            case 'category':
+              return value ? { attribute: 'category' as const, value } : null
+            case 'price':
+              return {
+                attribute: 'price' as const,
+                value: Number(value.slice(1)),
+              }
+            case 'quantity':
+              return {
+                attribute: 'quantity' as const,
+                value: Number(value.replaceAll(/[^\d]+/g, '')),
+              }
+            default:
+              return null
+          }
+        })
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
+
+      if (attributes.length > 0) {
+        await items.attributes(id, attributes)
+      }
+
+      return data(null, {
+        headers: await createToast(args, {
+          description: 'The list entry was updated.',
+          title: 'Update Successful',
+          type: 'success',
+        }),
+      })
+    }
     case 'update-item-completed-at':
       await env.LIST_ITEMS.getByName(list.id).update({
         id: form.id,
@@ -385,24 +440,7 @@ export default function ListDetails({ loaderData }: Route.ComponentProps) {
                   </Button>
                 </div>
               )}
-              <Tabs
-                onValueChange={(type) =>
-                  submit(
-                    { intent: 'change-list-type', type },
-                    { method: 'post' },
-                  )
-                }
-                value={list.type}
-              >
-                <TabsList>
-                  <TabsTrigger className="flex items-center" value="basic">
-                    <Icon name="unordered-list" /> Basic
-                  </TabsTrigger>
-                  <TabsTrigger className="flex items-center" value="todo">
-                    <Icon name="checklist-2" /> Todo
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <ListTypeDropdownMenu list={list} />
             </div>
             <CardDescription>
               {list.type === 'todo'

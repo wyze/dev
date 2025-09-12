@@ -6,7 +6,7 @@ import type { Uuid } from '~/helpers/create-uuid'
 import { provider } from './migrations'
 import { Base, type Env } from '../base'
 
-type ListType = 'basic' | 'todo'
+type ListType = 'basic' | 'shopping' | 'todo'
 
 interface Data {
   id: Uuid

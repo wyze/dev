@@ -21,7 +21,7 @@ export const ListSchema = v.object({
     v.string('Must be a string.'),
     v.nonEmpty('Must provide a name for the list.'),
   ),
-  type: v.optional(v.picklist(['basic', 'todo']), 'basic'),
+  type: v.optional(v.picklist(['basic', 'shopping', 'todo']), 'basic'),
 })
 
 export const ListsSchema = v.pipe(

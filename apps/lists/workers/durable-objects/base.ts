@@ -1,5 +1,5 @@
 import type { MigrationProvider } from 'kysely'
-import { Kysely, Migrator } from 'kysely'
+import { Kysely, Migrator, ParseJSONResultsPlugin } from 'kysely'
 import { D1Dialect } from 'kysely-d1'
 import { DurableObjectSqliteDialect } from 'kysely-durable-object-sqlite'
 
@@ -22,6 +22,7 @@ export class Base<T> extends DurableObject {
       dialect: new DurableObjectSqliteDialect({
         sql: ctx.storage.sql,
       }),
+      plugins: [new ParseJSONResultsPlugin()],
     })
 
     this.ctx.blockConcurrencyWhile(async () => {

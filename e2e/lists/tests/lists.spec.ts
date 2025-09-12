@@ -74,10 +74,7 @@ test('able to edit entry of existing list', async ({ listsPage: _, page }) => {
     .fill('I have been edited.')
 
   await page.getByRole('button', { name: 'Save' }).click()
-  await expect(
-    page.getByText('The list entry label was updated.'),
-  ).toBeVisible()
-
+  await expect(page.getByText('The list entry was updated.')).toBeVisible()
   await expect(page.getByText('I have been edited.')).toBeVisible()
 })
 
@@ -139,28 +136,24 @@ test('able to reorder items in the list', async ({ listsPage, page }) => {
   ])
 })
 
-test('able to switch list type to todo', async ({ listsPage: _, page }) => {
-  const tab = page.getByRole('tab', { name: 'Todo' })
-
-  await tab.click()
-  await expect(tab).toHaveAttribute('aria-selected', 'true')
+test('able to switch list type to todo', async ({ listsPage, page }) => {
+  await listsPage.changeType('Todo')
   await expect(
     page.getByText('The type of list has been changed.'),
   ).toBeVisible()
   await expect(page.getByText('0 of 1 completed')).toBeVisible()
 })
 
-test('able to toggle list item completion', async ({ listsPage: _, page }) => {
-  await page.getByRole('tab', { name: 'Todo' }).click()
-
+test('able to toggle list item completion', async ({ listsPage, page }) => {
+  await listsPage.changeType('Todo')
   const checkbox = page.getByRole('checkbox')
   await expect(checkbox).toHaveAttribute('aria-checked', 'false')
   await checkbox.click()
   await expect(checkbox).toHaveAttribute('aria-checked', 'true')
   await expect(page.getByText('1 of 1 completed')).toBeVisible()
-  await page.getByRole('tab', { name: 'Basic' }).click()
+  await listsPage.changeType('Basic')
   await expect(page.getByText('1 item')).toBeVisible()
-  await page.getByRole('tab', { name: 'Todo' }).click()
+  await listsPage.changeType('Todo')
   await checkbox.click()
   await expect(checkbox).toHaveAttribute('aria-checked', 'false')
   await expect(page.getByText('0 of 1 completed')).toBeVisible()
@@ -182,4 +175,33 @@ test('able to migrate anonymous user to real user', async ({
   await page.goto(url)
   await expect(page).toHaveTitle(`${listsPage.title} · Lists`)
   await expect(page.getByText(listsPage.title)).toBeVisible()
+})
+
+test.describe('Shopping list has additional fields', () => {
+  test.beforeEach(async ({ listsPage, page }) => {
+    await listsPage.changeType('Shopping')
+    await page.getByRole('button', { name: 'Edit item' }).click()
+  })
+
+  test('Can change the quantity', async ({ listsPage: _, page }) => {
+    await page.getByRole('textbox', { name: 'Quantity' }).fill('4')
+    await page.getByRole('button', { name: 'Save' }).click()
+    await expect(page.getByText('The list entry was updated.')).toBeVisible()
+    await expect(page.getByRole('main').getByText('4')).toBeVisible()
+  })
+
+  test('Can change the price', async ({ listsPage: _, page }) => {
+    await page.getByRole('textbox', { name: 'Price' }).fill('15.4')
+    await page.getByRole('button', { name: 'Save' }).click()
+    await expect(page.getByText('The list entry was updated.')).toBeVisible()
+    await expect(page.getByRole('main').getByText('15.40')).toBeVisible()
+  })
+
+  test('Can change the category', async ({ listsPage: _, page }) => {
+    await page.getByRole('combobox', { name: 'Category' }).click()
+    await page.getByRole('option', { name: 'Meat' }).click()
+    await page.getByRole('button', { name: 'Save' }).click()
+    await expect(page.getByText('The list entry was updated.')).toBeVisible()
+    await expect(page.getByRole('main').getByText('Meat')).toBeVisible()
+  })
 })
