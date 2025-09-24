@@ -22,7 +22,7 @@
     "@react-email/components": "~0.5.3",
     "@wyze/icons": "workspace:*",
     "@wyze/ui": "workspace:*",
-    "better-auth": "^1.3.9",
+    "better-auth": "^1.3.16",
     "kysely": "~0.28.5",
     "kysely-d1": "~0.4.0",
     "kysely-durable-object-sqlite": "~0.0.0",
