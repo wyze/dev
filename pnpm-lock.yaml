@@ -13,8 +13,8 @@ catalogs:
       specifier: ^22.18.1
       version: 22.18.1
     '@types/react':
-      specifier: ^19.1.12
-      version: 19.1.12
+      specifier: ^19.1.14
+      version: 19.1.14
     react:
       specifier: ^19.1.1
       version: 19.1.1
@@ -116,10 +116,10 @@ importers:
         version: 22.18.1
       '@types/react':
         specifier: 'catalog:'
-        version: 19.1.12
+        version: 19.1.14
       '@types/react-dom':
         specifier: ^19.1.9
-        version: 19.1.9(@types/react@19.1.12)
+        version: 19.1.9(@types/react@19.1.14)
       '@wyze/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
@@ -161,7 +161,7 @@ importers:
     dependencies:
       '@types/react':
         specifier: 'catalog:'
-        version: 19.1.12
+        version: 19.1.14
       react:
         specifier: 'catalog:'
         version: 19.1.1
@@ -185,10 +185,10 @@ importers:
     dependencies:
       '@base-ui-components/react':
         specifier: ^1.0.0-beta.3
-        version: 1.0.0-beta.3(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 1.0.0-beta.3(@types/react@19.1.14)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@types/react':
         specifier: 'catalog:'
-        version: 19.1.12
+        version: 19.1.14
       '@wyze/icons':
         specifier: workspace:*
         version: link:../icons
@@ -2085,8 +2085,8 @@ packages:
     peerDependencies:
       '@types/react': ^19.0.0
 
-  '@types/react@19.1.12':
-    resolution: {integrity: sha512-cMoR+FoAf/Jyq6+Df2/Z41jISvGZZ2eTlnsaJRptmZ76Caldwy1odD4xTr/gNV9VLj0AWgg/nmkevIyUfIIq5w==}
+  '@types/react@19.1.14':
+    resolution: {integrity: sha512-ukd93VGzaNPMAUPy0gRDSC57UuQbnH9Kussp7HBjM06YFi9uZTFhOvMSO2OKqXm1rSgzOE+pVx1k1PYHGwlc8Q==}
 
   '@vitejs/plugin-rsc@0.4.11':
     resolution: {integrity: sha512-+4H4wLi+Y9yF58znBfKgGfX8zcqUGt8ngnmNgzrdGdF1SVz7EO0sg7WnhK5fFVHt6fUxsVEjmEabsCWHKPL1Tw==}
@@ -3509,10 +3509,10 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
-  '@base-ui-components/react@1.0.0-beta.3(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@base-ui-components/react@1.0.0-beta.3(@types/react@19.1.14)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@babel/runtime': 7.28.3
-      '@base-ui-components/utils': 0.1.1(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@base-ui-components/utils': 0.1.1(@types/react@19.1.14)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@floating-ui/react-dom': 2.1.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@floating-ui/utils': 0.2.10
       react: 19.1.1
@@ -3521,9 +3521,9 @@ snapshots:
       tabbable: 6.2.0
       use-sync-external-store: 1.5.0(react@19.1.1)
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.14
 
-  '@base-ui-components/utils@0.1.1(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@base-ui-components/utils@0.1.1(@types/react@19.1.14)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@babel/runtime': 7.28.3
       '@floating-ui/utils': 0.2.10
@@ -3532,7 +3532,7 @@ snapshots:
       reselect: 5.1.1
       use-sync-external-store: 1.5.0(react@19.1.1)
     optionalDependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.14
 
   '@better-auth/utils@0.2.6':
     dependencies:
@@ -5482,11 +5482,11 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
-  '@types/react-dom@19.1.9(@types/react@19.1.12)':
+  '@types/react-dom@19.1.9(@types/react@19.1.14)':
     dependencies:
-      '@types/react': 19.1.12
+      '@types/react': 19.1.14
 
-  '@types/react@19.1.12':
+  '@types/react@19.1.14':
     dependencies:
       csstype: 3.1.3
 
