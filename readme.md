@@ -10,6 +10,7 @@ This Turborepo includes the following packages/applications:
 ### Applications
 
 - `lists`: a [React Router](https://reactrouter.com) application about various types of lists
+- `mystic-bytes-api`: a [Hono](https://hono.dev) api to play a game
 
 ### Packages
 

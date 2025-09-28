@@ -1,0 +1,16 @@
+{
+  "extends": "@wyze/typescript-config/hono",
+  "exclude": ["src/**/*.test.ts"],
+  "include": [
+    "src/**/*",
+    "db/generate.ts",
+    "vitest.config.mts",
+    "worker-configuration.d.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

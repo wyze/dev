@@ -10,6 +10,7 @@
     "postui": "pnpm check",
     "preview": "turbo preview",
     "typecheck": "turbo typecheck",
+    "test": "turbo test",
     "ui": "pnpm --filter=ui shadcn"
   },
   "devDependencies": {
@@ -23,10 +24,10 @@
     "dependencies": {
       "gh": "latest",
       "nodejs.org": "^22.0.0",
-      "pnpm.io": "10.15.0"
+      "pnpm.io": "10.17.1"
     }
   },
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "pnpm@10.17.1",
   "trustedDependencies": [
     "@biomejs/biome"
   ]

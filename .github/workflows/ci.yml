@@ -50,6 +50,45 @@ jobs:
       - name: Check
         run: pnpm check
 
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Cache Turborepo
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-test-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-test-
+
+      - name: Import secrets
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        run: |
+          echo ${{ secrets.MYSTIC_BYTES_API_ENV }} | tr ' ' '\n' > apps/mystic-bytes-api/.env
+
+      - name: Test
+        run: pnpm test
+
   typecheck:
     name: Typecheck
     runs-on: ubuntu-latest
@@ -85,13 +124,14 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: |
           echo ${{ secrets.LISTS_ENV }} | tr ' ' '\n' > apps/lists/.env
+          echo ${{ secrets.MYSTIC_BYTES_API_ENV }} | tr ' ' '\n' > apps/mystic-bytes-api/.env
 
       - name: Typecheck
         run: pnpm typecheck
 
   build:
     name: Build
-    needs: [check, typecheck]
+    needs: [check, test, typecheck]
     runs-on: ubuntu-latest
     if: success()
     steps:

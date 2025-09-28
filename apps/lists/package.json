@@ -22,11 +22,11 @@
     "@react-email/components": "~0.5.3",
     "@wyze/icons": "workspace:*",
     "@wyze/ui": "workspace:*",
-    "better-auth": "^1.3.9",
-    "kysely": "~0.28.5",
-    "kysely-d1": "~0.4.0",
-    "kysely-durable-object-sqlite": "~0.0.0",
-    "kysely-plugin-serialize": "~0.8.2",
+    "better-auth": "catalog:",
+    "kysely": "catalog:",
+    "kysely-d1": "catalog:",
+    "kysely-do": "~0.0.1-rc.1",
+    "kysely-plugin-serialize": "catalog:",
     "isbot": "^5.1.30",
     "mnemonic-words": "^2.0.0",
     "sonner": "catalog:",
@@ -40,15 +40,15 @@
   },
   "devDependencies": {
     "@react-router/dev": "catalog:",
-    "@types/better-sqlite3": "^7.6.13",
+    "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "^19.1.9",
     "@wyze/typescript-config": "workspace:*",
     "@wyze/vite-config": "workspace:*",
-    "better-sqlite3": "^12.2.0",
+    "better-sqlite3": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "wrangler": "^4.36.0"
+    "wrangler": "catalog:"
   }
 }

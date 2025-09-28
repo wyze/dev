@@ -1,0 +1,17 @@
+{
+  "extends": "@wyze/typescript-config/hono",
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "vite.config.ts",
+    "worker-configuration.d.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/test/*": ["./test/*"]
+    },
+    "types": ["node", "@cloudflare/vitest-pool-workers"]
+  }
+}

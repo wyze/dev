@@ -1,5 +1,5 @@
 {
-  "extends": "@wyze/typescript-config/cloudflare",
+  "extends": "@wyze/typescript-config/react",
   "include": [
     ".react-router/types/**/*",
     "app/**/*",

@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./cloudflare": "./src/cloudflare.json",
+    "./hono": "./src/hono.json",
     "./node": "./src/node.json",
     "./react": "./src/react.json"
   },

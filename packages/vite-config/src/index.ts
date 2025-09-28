@@ -6,6 +6,10 @@ import devtoolsJson from 'vite-plugin-devtools-json'
 import { iconsSpritesheet } from 'vite-plugin-icons-spritesheet'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
+export const hono = (): UserConfig => ({
+  plugins: [tsconfigPaths()],
+})
+
 export const icons = (): UserConfig => ({
   build: {
     rollupOptions: {

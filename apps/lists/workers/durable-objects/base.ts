@@ -1,7 +1,7 @@
 import type { MigrationProvider } from 'kysely'
 import { Kysely, Migrator, ParseJSONResultsPlugin } from 'kysely'
 import { D1Dialect } from 'kysely-d1'
-import { DurableObjectSqliteDialect } from 'kysely-durable-object-sqlite'
+import { DODialect } from 'kysely-do'
 
 import { createDatabase } from '~/.server/db'
 
@@ -10,7 +10,7 @@ import type { Env } from '../app'
 
 export type { Env }
 
-export class Base<T> extends DurableObject {
+export class Base<T> extends DurableObject<Env> {
   protected d1: ReturnType<typeof createDatabase>
   protected db: Kysely<T>
 
@@ -19,9 +19,7 @@ export class Base<T> extends DurableObject {
 
     this.d1 = createDatabase(new D1Dialect({ database: env.DB }))
     this.db = new Kysely({
-      dialect: new DurableObjectSqliteDialect({
-        sql: ctx.storage.sql,
-      }),
+      dialect: new DODialect({ ctx }),
       plugins: [new ParseJSONResultsPlugin()],
     })
 

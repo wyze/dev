@@ -19,6 +19,9 @@
     "preview": {
       "dependsOn": ["^preview"]
     },
+    "test": {
+      "dependsOn": ["^test"]
+    },
     "typecheck": {
       "dependsOn": ["typegen", "^typecheck"],
       "outputs": ["*.tsbuildinfo"]

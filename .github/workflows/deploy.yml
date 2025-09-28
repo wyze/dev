@@ -21,10 +21,12 @@ jobs:
     name: Deploy to Cloudflare Workers
     strategy:
       matrix:
-        app: [lists]
+        app: [lists, mystic-bytes-api]
         include:
           - app: lists
             env_secret: LISTS_ENV
+          - app: mystic-bytes-api
+            env_secret: MYSTIC_BYTES_API_ENV
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
