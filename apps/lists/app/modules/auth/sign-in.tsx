@@ -67,7 +67,7 @@ export async function action({ request }: Route.ActionArgs) {
         })
 
         if (response.redirect) {
-          return redirect(`${response.url}`)
+          return redirect(`${response.url}`, { headers })
         }
 
         return data({ ok: true, value: null }, { headers })
