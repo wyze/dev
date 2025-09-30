@@ -50,7 +50,7 @@ jobs:
         run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Cache Turborepo
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: .turbo
           key: ${{ runner.os }}-turbo-build-${{ github.sha }}
@@ -64,7 +64,7 @@ jobs:
         run: echo "ENV_HASH=$(echo -n ${{ secrets[matrix.env_secret] }} | sha384sum)" >> $GITHUB_ENV
 
       - name: Cache environment variables
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: env-cache
         with:
           path: readme.md
@@ -81,7 +81,7 @@ jobs:
           workingDirectory: apps/${{ matrix.app }}
 
       - name: Cache database migration
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: db-cache
         with:
           path: apps/${{ matrix.app }}/db/schema.sql
@@ -97,7 +97,7 @@ jobs:
           workingDirectory: apps/${{ matrix.app }}
 
       - name: Cache deploy
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: deploy-cache
         with:
           path: apps/${{ matrix.app }}/build
