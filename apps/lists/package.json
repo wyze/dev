@@ -27,7 +27,7 @@
     "kysely-d1": "catalog:",
     "kysely-do": "~0.0.1-rc.1",
     "kysely-plugin-serialize": "catalog:",
-    "isbot": "^5.1.30",
+    "isbot": "^5.1.31",
     "mnemonic-words": "^2.0.0",
     "sonner": "catalog:",
     "react": "catalog:",
