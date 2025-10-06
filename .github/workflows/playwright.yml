@@ -21,7 +21,7 @@ jobs:
     name: End-to-End Tests
     strategy:
       matrix:
-        app: [lists]
+        app: [lists, weather]
         include:
           - app: lists
             app_env_secret: LISTS_LOCAL_ENV
@@ -74,6 +74,7 @@ jobs:
         run: pnpm --filter=${{ matrix.app }}-e2e exec playwright install chromium
 
       - name: Migrate database
+        if: ${{ hashFiles(format('apps/{0}/db/schema.sql', matrix.app)) != '' }}
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -82,6 +83,7 @@ jobs:
           workingDirectory: apps/${{ matrix.app }}
 
       - name: Import secrets
+        if: matrix.app_env_secret != ''
         run: |
           echo ${{ secrets[matrix.app_env_secret] }} | tr ' ' '\n' > apps/${{ matrix.app }}/build/server/.env
           echo ${{ secrets[matrix.e2e_env_secret] }} | tr ' ' '\n' > e2e/${{ matrix.app }}/.env

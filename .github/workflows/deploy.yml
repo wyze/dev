@@ -21,7 +21,7 @@ jobs:
     name: Deploy to Cloudflare Workers
     strategy:
       matrix:
-        app: [lists, mystic-bytes-api]
+        app: [lists, mystic-bytes-api, weather]
         include:
           - app: lists
             env_secret: LISTS_ENV
@@ -72,7 +72,7 @@ jobs:
 
       - name: Import secrets
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
-        if: steps.env-cache.outputs.cache-hit != 'true'
+        if: ${{ steps.env-cache.outputs.cache-hit != 'true' && matrix.env_secret != '' }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -89,7 +89,8 @@ jobs:
 
       - name: Migrate database
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
-        if: steps.db-cache.outputs.cache-hit != 'true'
+        if: ${{ steps.db-cache.outputs.cache-hit != 'true' &&
+          hashFiles(format('apps/{0}/db/schema.sql', matrix.app)) != '' }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

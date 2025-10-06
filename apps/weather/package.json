@@ -1,5 +1,5 @@
 {
-  "name": "lists",
+  "name": "weather",
   "license": "MIT",
   "private": true,
   "type": "module",
@@ -16,37 +16,21 @@
     "typegen:rr": "react-router typegen"
   },
   "dependencies": {
-    "@dnd-kit/abstract": "~0.1.21",
-    "@dnd-kit/helpers": "~0.1.21",
-    "@dnd-kit/react": "~0.1.21",
-    "@react-email/components": "~0.5.3",
     "@wyze/icons": "workspace:*",
     "@wyze/ui": "workspace:*",
-    "better-auth": "catalog:",
-    "kysely": "catalog:",
-    "kysely-d1": "catalog:",
-    "kysely-do": "~0.0.1-rc.1",
-    "kysely-plugin-serialize": "catalog:",
-    "isbot": "^5.1.30",
-    "mnemonic-words": "^2.0.0",
+    "isbot": "catalog:",
     "sonner": "catalog:",
     "react": "catalog:",
-    "react-aria-components": "^1.12.1",
-    "react-dom": "^19.1.1",
-    "react-router": "catalog:",
-    "resend": "^6.0.3",
-    "uuid": "^13.0.0",
-    "valibot": "^1.1.0"
+    "react-dom": "catalog:",
+    "react-router": "catalog:"
   },
   "devDependencies": {
     "@react-router/dev": "catalog:",
-    "@types/better-sqlite3": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@wyze/typescript-config": "workspace:*",
     "@wyze/vite-config": "workspace:*",
-    "better-sqlite3": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "wrangler": "catalog:"
