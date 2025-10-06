@@ -9,7 +9,7 @@
     "e2e": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
+    "@playwright/test": "^1.56.0",
     "@types/node": "catalog:",
     "@wyze/typescript-config": "workspace:*",
     "lists": "workspace:*",
