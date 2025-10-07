@@ -25,8 +25,8 @@ catalogs:
       specifier: ^19.2.0
       version: 19.2.0
     better-auth:
-      specifier: ^1.3.23
-      version: 1.3.23
+      specifier: ^1.3.27
+      version: 1.3.27
     better-sqlite3:
       specifier: ^12.4.1
       version: 12.4.1
@@ -97,7 +97,7 @@ importers:
         version: link:../../packages/ui
       better-auth:
         specifier: 'catalog:'
-        version: 1.3.23(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 1.3.27(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       isbot:
         specifier: ^5.1.30
         version: 5.1.30
@@ -188,7 +188,7 @@ importers:
         version: 2.1.22
       better-auth:
         specifier: 'catalog:'
-        version: 1.3.23(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 1.3.27(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       hono:
         specifier: ^4.9.9
         version: 4.9.9
@@ -593,8 +593,8 @@ packages:
       '@types/react':
         optional: true
 
-  '@better-auth/core@1.3.23':
-    resolution: {integrity: sha512-l0ICSSu8N4tOcdbDX6DRetFaX/wBHLwB4mSp9LD9DfjgDywKWWbzTFr3GP+T5HfvNq+vmH4NKjr2MJtI+sTqIw==}
+  '@better-auth/core@1.3.27':
+    resolution: {integrity: sha512-3Sfdax6MQyronY+znx7bOsfQHI6m1SThvJWb0RDscFEAhfqLy95k1sl+/PgGyg0cwc2cUXoEiAOSqYdFYrg3vA==}
 
   '@better-auth/utils@0.3.0':
     resolution: {integrity: sha512-W+Adw6ZA6mgvnSnhOki270rwJ42t4XzSK6YWGF//BbVXL6SwCLWfyzBc1lN2m/4RM28KubdBKQ4X5VMoLRNPQw==}
@@ -2538,8 +2538,8 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  better-auth@1.3.23:
-    resolution: {integrity: sha512-wskWRCUu9pCmGzVMht2+ZkO33CzztJUdtuBttq7YDxBSR5/gaa3WaTx9TLLgUz/wBNCqyAW71uCqeArI5M6Fpg==}
+  better-auth@1.3.27:
+    resolution: {integrity: sha512-SwiGAJ7yU6dBhNg0NdV1h5M8T5sa7/AszZVc4vBfMDrLLmvUfbt9JoJ0uRUJUEdKRAAxTyl9yA+F3+GhtAD80w==}
     peerDependencies:
       '@lynx-js/react': '*'
       '@sveltejs/kit': '*'
@@ -4228,7 +4228,10 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.0
 
-  '@better-auth/core@1.3.23': {}
+  '@better-auth/core@1.3.27':
+    dependencies:
+      better-call: 1.0.19
+      zod: 4.1.5
 
   '@better-auth/utils@0.3.0': {}
 
@@ -6407,9 +6410,9 @@ snapshots:
 
   base64-js@1.5.1: {}
 
-  better-auth@1.3.23(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  better-auth@1.3.27(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
-      '@better-auth/core': 1.3.23
+      '@better-auth/core': 1.3.27
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
       '@noble/ciphers': 2.0.0
