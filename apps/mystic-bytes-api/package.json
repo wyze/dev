@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@hono/standard-validator": "~0.1.5",
-    "@scalar/hono-api-reference": "~0.9.19",
+    "@scalar/hono-api-reference": "~0.9.22",
     "arktype": "^2.1.22",
     "better-auth": "catalog:",
     "hono": "^4.9.9",
