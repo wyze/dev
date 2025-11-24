@@ -1,0 +1,38 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
+  "extends": ["ultracite/core", "ultracite/remix"],
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              ":PACKAGE:",
+              ":BLANK_LINE:",
+              "~/**",
+              ":BLANK_LINE:",
+              "./**"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "asNeeded"
+    }
+  },
+  "linter": {
+    "rules": {
+      "nursery": {
+        "noShadow": "off"
+      },
+      "performance": {
+        "noNamespaceImport": "off"
+      }
+    }
+  }
+}

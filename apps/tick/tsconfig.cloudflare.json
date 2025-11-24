@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@wyze/typescript-config/cloudflare",
+  "include": [
+    ".react-router/types/**/*",
+    "app/**/*",
+    "app/**/.server/**/*",
+    "app/**/.client/**/*",
+    "workers/**/*",
+    "alchemy.run.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "composite": true,
+    "paths": {
+      "~/*": ["./app/*"]
+    },
+    "rootDirs": [".", "./.react-router/types"],
+    "types": ["vite/client", "@cloudflare/workers-types"]
+  }
+}

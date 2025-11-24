@@ -1,0 +1,29 @@
+{
+  "name": "dev",
+  "private": true,
+  "scripts": {
+    "alchemy": "pnpm dlx alchemy",
+    "build": "turbo build",
+    "deploy": "turbo deploy",
+    "destroy": "turbo destroy",
+    "dev": "turbo dev",
+    "format": "turbo ultracite:fix",
+    "lint": "turbo ultracite:check",
+    "test:e2e": "turbo test:e2e",
+    "typecheck": "turbo typecheck",
+    "ui": "pnpm --filter=ui shadcn",
+    "ultracite:check": "ultracite check",
+    "ultracite:fix": "ultracite fix"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8",
+    "@playwright/test": "^1.57.0",
+    "turbo": "^2.6.1",
+    "typescript": "~5.9.3",
+    "ultracite": "^6.3.7"
+  },
+  "packageManager": "pnpm@10.23.0",
+  "engines": {
+    "node": "24"
+  }
+}

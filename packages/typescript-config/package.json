@@ -1,0 +1,9 @@
+{
+  "name": "@wyze/typescript-config",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./cloudflare": "./src/cloudflare.json",
+    "./node": "./src/node.json"
+  }
+}

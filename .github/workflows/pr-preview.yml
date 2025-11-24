@@ -1,0 +1,60 @@
+name: Preview
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+concurrency:
+  group: pr-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-preview:
+    name: Deploy
+    if: ${{ github.event.action != 'closed' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+
+      - name: Setup and install
+        uses: ./.github/actions/setup-action
+
+      - name: Deploy Preview
+        run: pnpm run deploy
+        env:
+          ALCHEMY_TELEMETRY_DISABLED: true
+          ALCHEMY_STATE_TOKEN: ${{ secrets.ALCHEMY_STATE_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          STAGE: pr-${{ github.event.pull_request.number }}
+
+  cleanup-preview:
+    name: Cleanup
+    if: ${{ github.event.action == 'closed' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+
+      - name: Setup and install
+        uses: ./.github/actions/setup-action
+
+      - name: Cleanup Preview
+        run: pnpm destroy
+        env:
+          ALCHEMY_TELEMETRY_DISABLED: true
+          ALCHEMY_STATE_TOKEN: ${{ secrets.ALCHEMY_STATE_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PHASE: destroy
+          STAGE: pr-${{ github.event.pull_request.number }}

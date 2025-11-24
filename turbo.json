@@ -1,0 +1,38 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "tui",
+  "globalPassThroughEnv": [
+    "ALCHEMY_*",
+    "CLOUDFLARE_*",
+    "GITHUB_*",
+    "PHASE",
+    "STAGE"
+  ],
+  "tasks": {
+    "//#ultracite:check": {},
+    "//#ultracite:fix": {},
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env"],
+      "outputs": ["build/**"]
+    },
+    "deploy": {
+      "dependsOn": ["^deploy"],
+      "outputs": ["build/**"]
+    },
+    "destroy": {
+      "cache": false
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:e2e": {
+      "dependsOn": ["^test:e2e"],
+      "outputs": ["playwright-report/**", "test-results/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    }
+  }
+}

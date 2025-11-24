@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@wyze/typescript-config/node",
+  "include": ["alchemy.run.ts", "playwright.config.ts", "vite.config.ts"],
+  "compilerOptions": {
+    "composite": true
+  }
+}

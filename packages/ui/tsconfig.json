@@ -1,0 +1,10 @@
+{
+  "extends": "@wyze/typescript-config/cloudflare",
+  "include": ["src"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@wyze/ui/*": ["./src/*"]
+    }
+  }
+}

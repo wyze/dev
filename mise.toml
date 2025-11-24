@@ -1,0 +1,8 @@
+[tools]
+node = "24"
+pnpm = "10.23.0"
+
+[tasks."test:e2e"]
+env.PHASE = "read"
+env.STAGE = "playwright"
+run = "pnpm test:e2e"

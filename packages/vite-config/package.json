@@ -1,0 +1,20 @@
+{
+  "name": "@wyze/vite-config",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b"
+  },
+  "devDependencies": {
+    "alchemy": "catalog:",
+    "@react-router/dev": "catalog:",
+    "@tailwindcss/vite": "^4.1.17",
+    "@wyze/typescript-config": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

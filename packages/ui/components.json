@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "radix",
+  "aliases": {
+    "components": "@wyze/ui/components",
+    "utils": "@wyze/ui/helpers/cn.ts",
+    "ui": "@wyze/ui/components/ui",
+    "lib": "@wyze/ui/helpers",
+    "hooks": "@wyze/ui/hooks"
+  },
+  "registries": {
+    "@basecn": "https://basecn.dev/r/{name}.json",
+    "@reui": "https://reui.io/r/{name}.json"
+  }
+}
