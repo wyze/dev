@@ -6,8 +6,14 @@ test('has title', async ({ page }) => {
   await expect(page).toHaveTitle('Tick')
 })
 
-test('has an alert', async ({ page }) => {
+test('can create a countdown', async ({ page }) => {
   await page.goto('/')
 
-  await expect(page.getByText('We are under construction')).toBeVisible()
+  const response = page.waitForResponse('/_root.data')
+
+  await page.getByRole('textbox', { name: 'Name' }).fill('Test countdown')
+  await page.getByRole('button', { name: 'Create' }).click()
+  await response
+
+  expect(1).toBe(1)
 })

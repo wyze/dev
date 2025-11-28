@@ -9,6 +9,7 @@ declare module 'react-router' {
   export interface AppLoadContext {
     cloudflare: {
       env: Env
+      cf: Request['cf']
       ctx: ExecutionContext
     }
   }
@@ -22,7 +23,7 @@ const requestHandler = createRequestHandler(
 export default {
   fetch(request: Request, env: Env, ctx: ExecutionContext) {
     return requestHandler(request, {
-      cloudflare: { env, ctx },
+      cloudflare: { env, cf: request.cf, ctx },
     })
   },
 }
