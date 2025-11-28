@@ -1,5 +1,5 @@
 import alchemy, { type Phase } from 'alchemy'
-import { ReactRouter } from 'alchemy/cloudflare'
+import { KVNamespace, ReactRouter } from 'alchemy/cloudflare'
 import { GitHubComment } from 'alchemy/github'
 import { CloudflareStateStore } from 'alchemy/state'
 
@@ -21,7 +21,12 @@ const app = await alchemy('tick', {
   stateStore: (scope) => new CloudflareStateStore(scope),
 })
 
+const timers = await KVNamespace('timers')
+
 export const worker = await ReactRouter('app', {
+  bindings: {
+    TIMERS: timers,
+  },
   build: 'vite build',
   compatibilityDate: '2025-11-13',
   dev: 'vite',

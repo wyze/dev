@@ -60,11 +60,36 @@ const FormSchema = v.object({
   ),
 })
 
+function base62(start: number) {
+  const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  let value = ''
+  let counter = start
+
+  while (counter > 0) {
+    value = chars[counter % 62] + value
+    counter = Math.floor(counter / 62)
+  }
+
+  return value || '0'
+}
+
+function slug() {
+  const length = 7
+  const array = new Uint8Array(length)
+
+  crypto.getRandomValues(array)
+
+  return Array.from(array)
+    .map((value) => base62(value % 62))
+    .join('')
+    .slice(0, length)
+}
+
 export function meta() {
   return [{ title: 'Tick' }]
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ context, request }: Route.ActionArgs) {
   const form = v.safeParse(
     FormSchema,
     Object.fromEntries(await request.formData())
@@ -84,7 +109,19 @@ export async function action({ request }: Route.ActionArgs) {
     return { target: 'Target time cannot be in the past.' }
   }
 
-  return redirect('/')
+  const timer = {
+    createdAt: dayjs().toISOString(),
+    expiresAt: form.output.target.toISOString(),
+    label: form.output.name,
+    slug: slug(),
+  }
+
+  await context.cloudflare.env.TIMERS.put(
+    `timer:${timer.slug}`,
+    JSON.stringify(timer)
+  )
+
+  return redirect(`/timer/${timer.slug}`)
 }
 
 export function loader({ context }: Route.LoaderArgs) {
