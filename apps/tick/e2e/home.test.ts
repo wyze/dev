@@ -12,5 +12,5 @@ test('can create a countdown', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Name' }).fill('Test countdown')
   await page.getByRole('button', { name: 'Create' }).click()
 
-  await expect(page.getByText('Soon')).toBeVisible()
+  await expect(page.getByText('Test countdown')).toBeVisible()
 })

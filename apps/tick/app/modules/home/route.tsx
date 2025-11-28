@@ -33,6 +33,8 @@ import * as React from 'react'
 import { Form, redirect } from 'react-router'
 import * as v from 'valibot'
 
+import { getTimezone } from '~/helpers/get-timezone'
+
 import type { Route } from './+types/route'
 
 type State = {
@@ -125,11 +127,7 @@ export async function action({ context, request }: Route.ActionArgs) {
 }
 
 export function loader({ context }: Route.LoaderArgs) {
-  const default_ = 'America/Chicago'
-  const tz = v.parse(
-    v.optional(v.nullable(v.string(), default_), default_),
-    context.cloudflare.cf?.timezone
-  )
+  const tz = getTimezone(context)
   const now = dayjs().tz(tz).startOf('hour').toJSON()
 
   return { now, tz }
