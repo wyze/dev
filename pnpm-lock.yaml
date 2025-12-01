@@ -151,8 +151,8 @@ importers:
         specifier: 'catalog:'
         version: 19.2.0
       react-day-picker:
-        specifier: ^9.11.2
-        version: 9.11.2(patch_hash=a33750d8fdc4118c869e48b1a11631add45f466162f1f3d0a702a1da47bfd23c)(react@19.2.0)
+        specifier: ^9.11.3
+        version: 9.11.3(patch_hash=a33750d8fdc4118c869e48b1a11631add45f466162f1f3d0a702a1da47bfd23c)(react@19.2.0)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -2346,8 +2346,8 @@ packages:
   proper-lockfile@4.1.2:
     resolution: {integrity: sha512-TjNPblN4BwAWMXU8s9AEz4JmQxnD1NNL7bNOY/AKUzyamc379FWASUhc/K1pL2noVb+XmZKLL68cjzLsiOAMaA==}
 
-  react-day-picker@9.11.2:
-    resolution: {integrity: sha512-TD/xMUGg2oiKX8jUR21MST5pj+7Y36097YtnDHQFlIcZOu3mbLLw2B2JqEByEGrR3HHveWYnKlyls6WqJgohAg==}
+  react-day-picker@9.11.3:
+    resolution: {integrity: sha512-7lD12UvGbkyXqgzbYIGQTbl+x29B9bAf+k0pP5Dcs1evfpKk6zv4EdH/edNc8NxcmCiTNXr2HIYPrSZ3XvmVBg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=16.8.0'
@@ -5075,7 +5075,7 @@ snapshots:
       retry: 0.12.0
       signal-exit: 3.0.7
 
-  react-day-picker@9.11.2(patch_hash=a33750d8fdc4118c869e48b1a11631add45f466162f1f3d0a702a1da47bfd23c)(react@19.2.0):
+  react-day-picker@9.11.3(patch_hash=a33750d8fdc4118c869e48b1a11631add45f466162f1f3d0a702a1da47bfd23c)(react@19.2.0):
     dependencies:
       react: 19.2.0
 
